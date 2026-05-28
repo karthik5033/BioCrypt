@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Upload, FileText, ArrowRight, Dna } from "lucide-react";
 import { encodeFile, type EncoderResult } from "@/lib/encoder";
+import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./encode.module.css";
 
 // Color map for DNA nucleotides
@@ -18,7 +19,7 @@ export default function EncodePage() {
   const [result, setResult] = useState<EncoderResult | null>(null);
   const [isEncoding, setIsEncoding] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [typedDNA, setTypedDNA] = useState("");
+  const { setPipelineStep, setOriginalFile, setEncoderResult } = useBioCrypt();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ─── Typing animation ────────────────────────────────────────────────────
@@ -44,9 +45,12 @@ export default function EncodePage() {
   // ─── File handling ────────────────────────────────────────────────────────
   const handleFile = useCallback((f: File) => {
     setFile(f);
+    setOriginalFile(f);
     setResult(null);
+    setEncoderResult(null);
     setTypedDNA("");
-  }, []);
+    setPipelineStep("encode", "pending");
+  }, [setOriginalFile, setEncoderResult, setPipelineStep]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -62,11 +66,15 @@ export default function EncodePage() {
   const handleConvert = async () => {
     if (!file) return;
     setIsEncoding(true);
+    setPipelineStep("encode", "in-progress");
     try {
       const encoded = await encodeFile(file);
       setResult(encoded);
+      setEncoderResult(encoded);
+      setPipelineStep("encode", "complete");
     } catch (err) {
       console.error("Encoding failed:", err);
+      setPipelineStep("encode", "pending");
     } finally {
       setIsEncoding(false);
     }

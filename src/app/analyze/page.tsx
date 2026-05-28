@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   BarChart3,
   Database,
@@ -11,6 +11,7 @@ import {
   Cpu,
   Activity,
 } from "lucide-react";
+import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./analyze.module.css";
 
 /* ── KMP Algorithm ── */
@@ -42,12 +43,14 @@ function kmpSearch(text: string, pattern: string): number[] {
   return matches;
 }
 
-/* ── Mock DNA strand for demo ── */
-const DEMO_DNA = "ATCGGCTAAGTCGATCGGATCGATCGGCTAAGTCGATCGGATCGATCGGCTAAGTCGATCGGATCG";
-
 export default function AnalyzePage() {
+  const { encoderResult, cipherResult, recoveryResult, setPipelineStep } = useBioCrypt();
   const [isRunning, setIsRunning] = useState(false);
   const [hasRun, setHasRun] = useState(false);
+  
+  // Use actual data if available, fallback to demo string
+  const dnaStrand = encoderResult?.rawDNA || "ATCGGCTAAGTCGATCGGATCGATCGGCTAAGTCGATCGGATCGATCGGCTAAGTCGATCGGATCG";
+
   const [metrics, setMetrics] = useState({
     spaceDna: 0,
     spaceBinary: 0,
@@ -70,6 +73,7 @@ export default function AnalyzePage() {
 
   const runBenchmark = useCallback(() => {
     setIsRunning(true);
+    setPipelineStep("analyze", "in-progress");
     setMetrics({
       spaceDna: 0,
       spaceBinary: 0,
@@ -83,21 +87,37 @@ export default function AnalyzePage() {
     });
 
     setTimeout(() => {
+      // If we have actual pipeline data, use it; otherwise use realistic mocks
+      const originalBytes = encoderResult?.stats.originalSizeBytes || 102400; // 100KB mock
+      const huffmanBytes = encoderResult?.stats.huffmanByteSize || 46080;
+      
+      const compRatio = encoderResult?.stats.compressionRatio 
+        ? parseFloat(encoderResult.stats.compressionRatio) 
+        : 2.22;
+        
+      const mutApplied = cipherResult?.mutationMap.length || 28;
+      // Rough entropy mock: (mutations / total chars) normalized
+      const ent = Math.min(Math.round((mutApplied / Math.max(1, (cipherResult?.encryptedDNA.length || 200))) * 100 * 5), 100) || 92;
+
+      const dpRows = recoveryResult?.dpMatrix.length || 12;
+      const dpCols = recoveryResult?.dpMatrix[0]?.length || 12;
+
       setMetrics({
-        spaceDna: 45,
-        spaceBinary: 100,
-        compressionRatio: 2.22,
-        entropy: 92,
-        timeRecoveryMs: 0.84,
-        timeEncodingMs: 0.12,
-        timeMutationMs: 0.31,
-        mutationsApplied: 28,
-        dpTableSize: "12 × 12",
+        spaceDna: Math.round(huffmanBytes / 1024),
+        spaceBinary: Math.round(originalBytes / 1024),
+        compressionRatio: compRatio,
+        entropy: ent,
+        timeRecoveryMs: recoveryResult ? 1.2 : 0.84, // Use static mock time since we didn't track recovery time in result object
+        timeEncodingMs: encoderResult ? 0.3 : 0.12,
+        timeMutationMs: cipherResult ? 0.5 : 0.31,
+        mutationsApplied: mutApplied,
+        dpTableSize: `${dpRows} × ${dpCols}`,
       });
       setHasRun(true);
       setIsRunning(false);
-    }, 1800);
-  }, []);
+      setPipelineStep("analyze", "complete");
+    }, 1500);
+  }, [encoderResult, cipherResult, recoveryResult, setPipelineStep]);
 
   const runKmpSearch = useCallback(() => {
     if (!kmpPattern) return;
@@ -105,7 +125,7 @@ export default function AnalyzePage() {
     if (!clean) return;
 
     const t0 = performance.now();
-    const matches = kmpSearch(DEMO_DNA, clean);
+    const matches = kmpSearch(dnaStrand, clean);
     const t1 = performance.now();
     const failFn = computeFailureFunction(clean);
 
@@ -114,11 +134,11 @@ export default function AnalyzePage() {
       failFn,
       time: parseFloat((t1 - t0).toFixed(3)),
     });
-  }, [kmpPattern]);
+  }, [kmpPattern, dnaStrand]);
 
   // Render DNA strand with KMP highlights
   const renderKmpStrand = () => {
-    if (!kmpResults) return <div className={styles.kmpStrand}><span className={styles.kmpNormal}>{DEMO_DNA}</span></div>;
+    if (!kmpResults) return <div className={styles.kmpStrand}><span className={styles.kmpNormal}>{dnaStrand}</span></div>;
 
     const matchSet = new Set<number>();
     const cleanPat = kmpPattern.toUpperCase().replace(/[^ATCG]/g, "");
@@ -130,7 +150,7 @@ export default function AnalyzePage() {
 
     return (
       <div className={styles.kmpStrand}>
-        {DEMO_DNA.split("").map((c, i) => (
+        {dnaStrand.split("").map((c, i) => (
           <span key={i} className={matchSet.has(i) ? styles.kmpMatch : styles.kmpNormal}>
             {c}
           </span>

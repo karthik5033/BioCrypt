@@ -7,6 +7,9 @@
   --accent-primary-hover: #d97706;
   --text-muted: #64748b;
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
+  
+  --font-dm-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-dm-mono: var(--font-dm-mono), monospace;
 }
 
 * {
@@ -21,9 +24,8 @@ body {
   overflow-x: hidden;
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-dm-sans);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -31,68 +33,16 @@ a {
   text-decoration: none;
 }
 
-code, pre {
-  font-family: var(--font-dm-mono), monospace;
-}
-
-/* Animations & Utilities */
-.fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-.slide-up {
-  opacity: 0;
-  animation: slideUp 0.6s ease-out forwards;
-}
-
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.spinner {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s linear infinite;
-}
-
-.spinner-teal {
-  border: 2px solid rgba(13, 148, 136, 0.3);
-  border-radius: 50%;
-  border-top-color: var(--accent-primary);
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Base button styles */
+/* Base UI Components */
 .btn-primary {
   background-color: var(--accent-primary);
   color: white;
   padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-weight: 500;
+  border-radius: 8px;
+  font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: all 0.2s ease;
   font-family: var(--font-dm-sans);
 }
 
@@ -101,36 +51,38 @@ code, pre {
   transform: translateY(-1px);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-secondary {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-weight: 500;
-  border: 1px solid var(--border-light);
   background-color: white;
   color: var(--foreground);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
   transition: all 0.2s ease;
   font-family: var(--font-dm-sans);
-  cursor: pointer;
 }
 
 .btn-secondary:hover {
-  border-color: var(--text-muted);
   background-color: var(--surface-hover);
+  border-color: #cbd5e1;
 }
 
+/* Custom Nav Links */
 .nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-muted);
   transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .nav-link:hover {
@@ -144,11 +96,116 @@ code, pre {
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .clinical-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  border-color: rgba(245, 158, 11, 0.3); /* Amber hint */
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Custom Spinners */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.spinner-teal {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid rgba(245, 158, 11, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--accent-primary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile responsive pipeline layout */
+.pipeline-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+}
+
+.mobile-tab-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 50;
+  padding: 0.75rem 1rem;
+  justify-content: space-around;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.mobile-tab-active {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .pipeline-bar {
+    display: none;
+  }
+  .mobile-tab-bar {
+    display: flex;
+  }
+  main {
+    padding-bottom: 5rem !important; /* Make room for tab bar */
+  }
+  
+  /* Navbar adjustments for mobile */
+  nav {
+    padding: 1rem !important;
+  }
+  .nav-link {
+    display: none !important; /* Hide desktop links in mobile */
+  }
 }

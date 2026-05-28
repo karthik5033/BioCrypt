@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Lock, Download, Wand2 } from "lucide-react";
 import { encryptDNA, type CipherResult } from "@/lib/mutationCipher";
+import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./encrypt.module.css";
 
 export default function EncryptPage() {
+  const { encoderResult, setPipelineStep, setCipherResult, setEncryptionKey: setGlobalKey } = useBioCrypt();
   const [dnaInput, setDnaInput] = useState("");
   const [keyInput, setKeyInput] = useState("");
   const [useSub, setUseSub] = useState(true);
@@ -14,10 +16,26 @@ export default function EncryptPage() {
   
   const [result, setResult] = useState<CipherResult | null>(null);
 
+  // Auto-populate from encode step
+  useEffect(() => {
+    if (encoderResult && !dnaInput) {
+      setDnaInput(encoderResult.rawDNA);
+    }
+  }, [encoderResult, dnaInput]);
+
   const handleEncrypt = () => {
     if (!dnaInput || !keyInput) return;
-    const res = encryptDNA(dnaInput.toUpperCase().replace(/[^ATCG]/g, ""), keyInput, useSub, useInv, useIndel);
-    setResult(res);
+    setPipelineStep("encrypt", "in-progress");
+    try {
+      const res = encryptDNA(dnaInput.toUpperCase().replace(/[^ATCG]/g, ""), keyInput, useSub, useInv, useIndel);
+      setResult(res);
+      setCipherResult(res);
+      setGlobalKey(keyInput);
+      setPipelineStep("encrypt", "complete");
+    } catch (err) {
+      console.error(err);
+      setPipelineStep("encrypt", "pending");
+    }
   };
 
   const downloadEncrypted = () => {

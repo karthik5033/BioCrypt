@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import PipelineStage from "@/components/layout/PipelineStage";
-import Footer from "@/components/layout/Footer";
+import ClientShell from "@/components/layout/ClientShell";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -30,34 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
       <body>
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          style={{ 
-            position: "fixed", 
-            top: 0, 
-            left: 0, 
-            width: "100%", 
-            height: "100%", 
-            objectFit: "cover", 
-            zIndex: 0, 
-            pointerEvents: "none" 
-          }}
-        >
-          <source src="/dna-video.mp4" type="video/mp4" />
-        </video>
-        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative", zIndex: 1, backgroundColor: "transparent" }}>
-          <Navbar />
-          <PipelineStage />
-          <main style={{ flex: 1, padding: "2rem", backgroundColor: "transparent" }}>
-            <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
-              {children}
-            </div>
-          </main>
-          <Footer />
-        </div>
+        <ClientShell>{children}</ClientShell>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Activity, RotateCcw, Sparkles, Clock, Cpu, ChevronRight, ArrowDownRight } from "lucide-react";
 import { needlemanWunsch, type RecoveryResult } from "@/lib/recoveryEngine";
+import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./recover.module.css";
 
 /* ── Presets for quick demo ── */
@@ -25,8 +26,19 @@ const PRESETS = [
 ];
 
 export default function RecoverPage() {
-  const [corruptedInput, setCorruptedInput] = useState("ATCG??TAAGT");
-  const [referenceInput, setReferenceInput] = useState("ATCGGCTAAGT");
+  const { cipherResult, encoderResult, setPipelineStep, setRecoveryResult: setGlobalRecoveryResult } = useBioCrypt();
+  const [corruptedInput, setCorruptedInput] = useState("");
+  const [referenceInput, setReferenceInput] = useState("");
+
+  // Auto-populate from encrypt/encode step
+  useEffect(() => {
+    if (cipherResult && !corruptedInput) {
+      setCorruptedInput(cipherResult.encryptedDNA);
+    }
+    if (encoderResult && !referenceInput) {
+      setReferenceInput(encoderResult.rawDNA);
+    }
+  }, [cipherResult, encoderResult, corruptedInput, referenceInput]);
 
   const [result, setResult] = useState<RecoveryResult | null>(null);
   const [animatedRows, setAnimatedRows] = useState<number>(0);
@@ -35,6 +47,7 @@ export default function RecoverPage() {
 
   const handleRecover = useCallback(() => {
     if (!corruptedInput || !referenceInput) return;
+    setPipelineStep("recover", "in-progress");
 
     const cleanCorrupted = corruptedInput.toUpperCase().replace(/[^ATCG?]/g, "");
     const cleanRef = referenceInput.toUpperCase().replace(/[^ATCG]/g, "");
@@ -48,8 +61,10 @@ export default function RecoverPage() {
 
     setExecutionTime(parseFloat((t1 - t0).toFixed(2)));
     setResult(res);
+    setGlobalRecoveryResult(res);
+    setPipelineStep("recover", "complete");
     setAnimatedRows(0);
-  }, [corruptedInput, referenceInput]);
+  }, [corruptedInput, referenceInput, setPipelineStep, setGlobalRecoveryResult]);
 
   // Animate DP table row by row
   useEffect(() => {
