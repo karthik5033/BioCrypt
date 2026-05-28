@@ -6,9 +6,9 @@
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/License-MIT-0D9488?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](LICENSE)
 
-*A file encryption system where data is encoded as DNA sequences, encrypted via controlled biological mutations, and recovered from corruption using sequence alignment algorithms.*
+*A premium, high-performance file encryption system where data is encoded as DNA sequences, encrypted via controlled biological mutations, and recovered from corruption using dynamic programming sequence alignment algorithms.*
 
 </div>
 
@@ -18,7 +18,9 @@
 
 **BioCrypt-X** is a bio-inspired resilient storage engine that models data corruption and recovery using sequence alignment algorithms from computational biology. It demonstrates how biological concepts — DNA encoding, mutations, and genomic alignment — can be applied to build a novel encryption and data-recovery pipeline.
 
-```
+The application features a fully responsive, state-driven pipeline where data flows seamlessly from one stage to the next, wrapped in a beautiful glassmorphic UI with a live DNA video background.
+
+```text
 File → Binary → DNA Strand → Compress → Mutate (Encrypt) → Store
                                                              ↓
 File ← Binary ← DNA Strand ← Decompress ← Recover ← Corrupted DNA
@@ -29,22 +31,16 @@ File ← Binary ← DNA Strand ← Decompress ← Recover ← Corrupted DNA
 ## ✨ Key Features
 
 ### 🔡 DNA Encoding & Compression
-Convert any file into a DNA sequence (`A`, `T`, `C`, `G`) using binary-to-nucleotide mapping, then compress with **Huffman Coding** for optimal space efficiency.
+Convert any file into a DNA sequence (`A`, `T`, `C`, `G`) using binary-to-nucleotide mapping, then compress with **Huffman Coding** for optimal space efficiency. Features a live typing animation of the generated nucleotide string.
 
 ### 🔐 Mutation Cipher
 Encrypt DNA strands using biologically-inspired mutations — **substitution**, **inversion**, and **deletion-insertion** — driven by a deterministic key-seeded mutation map. Fully reversible.
 
 ### 🩹 Self-Healing Recovery Engine *(Killer Feature)*
-Reconstruct corrupted DNA segments using **Needleman-Wunsch** global sequence alignment and **Longest Common Subsequence (LCS)** dynamic programming, with a live-animated DP table visualization.
-
-```
-Original:    ATCGGCTAAGT
-Corrupted:   ATCG??TAAGT
-Recovered:   ATCGGCTAAGT  ✓
-```
+Reconstruct corrupted DNA segments (with missing `?` bases) using **Needleman-Wunsch** global sequence alignment and **Longest Common Subsequence (LCS)** dynamic programming. Watch the algorithm build the DP scoring matrix live, row-by-row, and trace back the optimal alignment path.
 
 ### 📊 Complexity Analysis Dashboard
-Real-time metrics for every operation — compression ratios, encryption overhead, recovery accuracy, and **KMP pattern search** — all visualized with interactive charts and Big-O annotations.
+Real-time metrics for every operation in the pipeline. View benchmark data for your run, explore algorithmic time complexities via Big-O notation, and use the **KMP (Knuth-Morris-Pratt)** pattern search tool to instantly locate genetic markers in your 90k+ base DNA strands.
 
 ---
 
@@ -52,38 +48,36 @@ Real-time metrics for every operation — compression ratios, encryption overhea
 
 | Stage | Algorithm | Complexity |
 |---|---|---|
-| DNA Encoding | Binary → Nucleotide Mapping | `O(n)` |
-| Compression | Huffman Coding (Greedy) | `O(n log n)` |
-| Pattern Indexing | Trie Construction | `O(n × m)` |
-| Encryption | Key-Seeded Mutation Cipher | `O(n)` |
-| Corruption Detection | KMP / Rabin-Karp | `O(n + m)` |
-| Recovery | LCS + Needleman-Wunsch (DP) | `O(m × n)` |
+| **DNA Encoding** | Binary → Nucleotide Mapping | `O(N)` |
+| **Compression** | Huffman Coding (Greedy) | `O(N log K)` (K=4) |
+| **Encryption** | Key-Seeded LCG Mutation Cipher | `O(N)` |
+| **Corruption Detection** | KMP / Rabin-Karp | `O(N + M)` |
+| **Recovery** | LCS + Needleman-Wunsch (DP) | `O(N × M)` |
 
 ---
 
 ## 🏗️ Architecture
 
-```
+```text
 biocrypt-x/
 ├── src/
 │   ├── app/                    # Next.js App Router pages
-│   │   ├── layout.tsx          # Root layout with navbar & sidebar
+│   │   ├── layout.tsx          # Root layout
 │   │   ├── page.tsx            # Landing page
-│   │   ├── encode/             # File → DNA conversion + Huffman compression
+│   │   ├── encode/             # File → DNA conversion + Huffman
 │   │   ├── encrypt/            # Mutation cipher engine
-│   │   ├── recover/            # DP-based recovery with live alignment table
-│   │   └── analyze/            # Complexity metrics dashboard
+│   │   ├── recover/            # DP-based recovery with live alignment
+│   │   └── analyze/            # Metrics dashboard & KMP search
 │   │
 │   ├── lib/                    # Core algorithm implementations
 │   │   ├── encoder.ts          # Binary → DNA + Huffman coding
-│   │   ├── mutationCipher.ts   # Key-seeded mutation encryption/decryption
-│   │   ├── recoveryEngine.ts   # LCS + Needleman-Wunsch alignment
-│   │   └── patternSearch.ts    # KMP + Rabin-Karp pattern matching
+│   │   ├── mutationCipher.ts   # Key-seeded mutation encryption
+│   │   └── recoveryEngine.ts   # Needleman-Wunsch DP alignment
 │   │
-│   ├── components/             # Reusable UI components
-│   └── context/                # Global state management
+│   ├── components/layout/      # UI Shell (Navbar, Footer, Pipeline Stage)
+│   └── context/                # React Context for global state flow
 │
-├── public/                     # Static assets
+├── public/                     # Static assets & dna-video.mp4
 ├── package.json
 ├── tsconfig.json
 └── next.config.ts
@@ -125,28 +119,26 @@ npm start
 
 ## 🖥️ Usage Workflow
 
-```
-1. Upload file         →  Drag & drop any file
-2. Convert to DNA      →  View the DNA strand (color-coded nucleotides)
-3. Compress            →  See Huffman compression ratio
-4. Encrypt             →  Apply mutation cipher with your secret key
-5. Corrupt manually    →  Introduce ? characters to simulate damage
-6. Recovery engine     →  Watch Needleman-Wunsch reconstruct the strand ✓
-7. Analyze             →  View complexity metrics & pattern search
-```
+The application uses global state context. To see the full magic, progress through the pipeline in order:
+
+1. **Encode** → Upload a file and convert it to a DNA strand.
+2. **Encrypt** → The generated DNA automatically carries over. Enter a secret key and apply biological mutations.
+3. **Recover** → The mutated string is passed as corrupted data. Run the DP matrix to dynamically heal the sequence back to the original.
+4. **Analyze** → Review the actual time, memory, and complexity benchmarks of your run. 
 
 ---
 
-## 🎨 Design Language
+## 🎨 Design Language & Aesthetics
+
+BioCrypt-X was designed to look like a premium, startup-grade web application with a focus on modern web design principles.
 
 | Element | Specification |
 |---|---|
-| Theme | Pure white (`#FFFFFF`) — clinical biotech aesthetic |
-| Accent | Deep teal (`#0D9488`) |
-| Code Font | DM Mono — for DNA sequences & code |
-| UI Font | DM Sans — for headings & body text |
-| Borders | Ultra-light gray (`#E5E7EB`) |
-| Shadows | Minimal (`0 1px 3px rgba(0,0,0,0.06)`) |
+| **Theme** | Pristine Glassmorphism — Translucent cards over a live video background |
+| **Accent** | Vibrant Amber / Bronze (`#F59E0B`) |
+| **Typography** | `DM Sans` (Clean UI/Headings) & `DM Mono` (DNA sequences, tables, metrics) |
+| **Animations** | Scroll-reveal observer hooks, animated DP matrix fills, CSS micro-interactions |
+| **Responsiveness** | Fluid grids and a sleek mobile tab-bar navigation for smaller screens |
 
 ---
 
@@ -154,34 +146,12 @@ npm start
 
 | Layer | Technology |
 |---|---|
-| Framework | **Next.js 15** (App Router) |
-| Language | **TypeScript** |
-| Styling | Vanilla CSS (no utility frameworks) |
-| Charts | Recharts |
-| State | React Context API |
-| Algorithms | Pure TypeScript (no external libraries) |
-
----
-
-## 📁 Module Breakdown
-
-### Module 1 — Encoder + Compressor
-- Binary → DNA conversion (`00→A`, `01→T`, `10→C`, `11→G`)
-- Huffman tree construction & encoding
-- Real-time compression ratio visualization
-
-### Module 2 — Mutation Cipher
-- Deterministic key-seeded mutation map (LCG random)
-- Substitution (`A↔T`, `C↔G`) at seeded positions
-- Segment inversion at seeded positions
-- Fully reversible decryption
-
-### Module 3 — Recovery Engine ⭐
-- Needleman-Wunsch global sequence alignment
-  - Match: `+2` | Mismatch: `-1` | Gap: `-2`
-- LCS-based gap inference for `?` characters
-- Animated DP table heatmap (row-by-row fill)
-- Recovery accuracy metrics
+| **Framework** | Next.js 16 (App Router + Turbopack) |
+| **Language** | TypeScript (Strict Mode) |
+| **Styling** | Vanilla CSS Modules (Zero Utility Frameworks) |
+| **State** | React Context API |
+| **Icons** | Lucide React |
+| **Algorithms** | Pure TypeScript (Zero External Libraries) |
 
 ---
 
