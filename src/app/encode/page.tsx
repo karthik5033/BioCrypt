@@ -236,7 +236,25 @@ export default function EncodePage() {
                 <span className={styles.statLabel} title="Highly compressed files (like JPG/PDF) will yield ~1.00x">
                   Ratio ⓘ
                 </span>
-                <span className={styles.statValueAccent}>
+                <span 
+                  className={styles.statValueAccent}
+                  style={{
+                    backgroundColor: result.stats.compressionRatio > 1.2 
+                      ? "rgba(16, 185, 129, 0.15)" // green
+                      : result.stats.compressionRatio > 1.0 
+                        ? "rgba(245, 158, 11, 0.15)" // yellow
+                        : "rgba(100, 116, 139, 0.15)", // gray
+                    color: result.stats.compressionRatio > 1.2 
+                      ? "#10B981" 
+                      : result.stats.compressionRatio > 1.0 
+                        ? "#F59E0B" 
+                        : "#64748b",
+                    padding: "0.2rem 0.6rem",
+                    borderRadius: "6px",
+                    display: "inline-block",
+                    marginTop: "0.2rem"
+                  }}
+                >
                   {result.stats.compressionRatio.toFixed(2)}x
                 </span>
               </div>
@@ -268,16 +286,17 @@ export default function EncodePage() {
           <div className={`clinical-card ${styles.statsCard}`}>
             <h3 className={styles.panelTitle}>Huffman Code Table</h3>
             <div className={styles.codeTableGrid}>
-              {Object.entries(result.stats.codeTable).map(
-                ([nucleotide, code]) => (
-                  <div key={nucleotide} className={styles.codeTableEntry}>
+              {Object.entries(result.stats.codeTable).slice(0, 48).map(
+                ([byteHex, code]) => (
+                  <div key={byteHex} className={styles.codeTableEntry}>
                     <span
                       className={styles.codeTableChar}
                       style={{
-                        color: DNA_COLORS[nucleotide] || "var(--foreground)",
+                        color: "var(--accent-primary)",
+                        fontFamily: "var(--font-dm-mono)"
                       }}
                     >
-                      {nucleotide}
+                      {byteHex}
                     </span>
                     <span className={styles.codeTableArrow}>→</span>
                     <code className={styles.codeTableCode}>{code}</code>
@@ -285,6 +304,11 @@ export default function EncodePage() {
                 )
               )}
             </div>
+            {Object.keys(result.stats.codeTable).length > 48 && (
+               <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "1rem", textAlign: "center" }}>
+                 Showing first 48 entries (out of {Object.keys(result.stats.codeTable).length} unique bytes).
+               </p>
+            )}
           </div>
         </div>
       )}

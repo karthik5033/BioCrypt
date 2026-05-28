@@ -20,41 +20,39 @@ const DNA_TO_BINARY: Record<string, string> = {
 // ─── Huffman Tree Node ──────────────────────────────────────────────────────
 
 interface HuffmanNode {
-  char: string | null;
+  byte: number | null;
   freq: number;
   left: HuffmanNode | null;
   right: HuffmanNode | null;
 }
 
 function createNode(
-  char: string | null,
+  byte: number | null,
   freq: number,
   left: HuffmanNode | null = null,
   right: HuffmanNode | null = null
 ): HuffmanNode {
-  return { char, freq, left, right };
+  return { byte, freq, left, right };
 }
 
 // ─── Huffman Encoding ───────────────────────────────────────────────────────
 
-function buildFrequencyMap(data: string): Map<string, number> {
-  const freq = new Map<string, number>();
-  for (const ch of data) {
-    freq.set(ch, (freq.get(ch) || 0) + 1);
+function buildFrequencyMap(data: Uint8Array): Map<number, number> {
+  const freq = new Map<number, number>();
+  for (const byte of data) {
+    freq.set(byte, (freq.get(byte) || 0) + 1);
   }
   return freq;
 }
 
-function buildHuffmanTree(freqMap: Map<string, number>): HuffmanNode | null {
+function buildHuffmanTree(freqMap: Map<number, number>): HuffmanNode | null {
   if (freqMap.size === 0) return null;
 
-  // Priority queue (min-heap) — simple array-based for clarity
   const nodes: HuffmanNode[] = [];
-  freqMap.forEach((freq, char) => {
-    nodes.push(createNode(char, freq));
+  freqMap.forEach((freq, byte) => {
+    nodes.push(createNode(byte, freq));
   });
 
-  // Sort ascending by frequency
   nodes.sort((a, b) => a.freq - b.freq);
 
   while (nodes.length > 1) {
@@ -62,7 +60,6 @@ function buildHuffmanTree(freqMap: Map<string, number>): HuffmanNode | null {
     const right = nodes.shift()!;
     const parent = createNode(null, left.freq + right.freq, left, right);
 
-    // Insert parent back in sorted position
     let inserted = false;
     for (let i = 0; i < nodes.length; i++) {
       if (parent.freq <= nodes[i].freq) {
@@ -80,13 +77,12 @@ function buildHuffmanTree(freqMap: Map<string, number>): HuffmanNode | null {
 function buildCodeTable(
   node: HuffmanNode | null,
   prefix: string = "",
-  table: Map<string, string> = new Map()
-): Map<string, string> {
+  table: Map<number, string> = new Map()
+): Map<number, string> {
   if (!node) return table;
 
-  if (node.char !== null) {
-    // Leaf node — if only one unique char, assign "0"
-    table.set(node.char, prefix || "0");
+  if (node.byte !== null) {
+    table.set(node.byte, prefix || "0");
     return table;
   }
 
@@ -95,9 +91,9 @@ function buildCodeTable(
   return table;
 }
 
-function huffmanEncode(data: string): {
+function huffmanEncode(data: Uint8Array): {
   encoded: string;
-  codeTable: Map<string, string>;
+  codeTable: Map<number, string>;
   tree: HuffmanNode | null;
 } {
   const freqMap = buildFrequencyMap(data);
@@ -105,8 +101,8 @@ function huffmanEncode(data: string): {
   const codeTable = buildCodeTable(tree);
 
   let encoded = "";
-  for (const ch of data) {
-    encoded += codeTable.get(ch) || "";
+  for (const byte of data) {
+    encoded += codeTable.get(byte) || "";
   }
 
   return { encoded, codeTable, tree };
@@ -171,16 +167,24 @@ export function dnaToBinary(dna: string): string {
 }
 
 /**
- * Full encode pipeline: File → Binary → DNA → Huffman Compress
+ * Full encode pipeline: File bytes → Huffman Compress → DNA
  */
 export async function encodeFile(file: File): Promise<EncoderResult> {
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  
+  // 1. Huffman compress the raw bytes
+  const { encoded: huffmanEncoded, codeTable } = huffmanEncode(bytes);
+
+  // 2. Convert compressed bitstring to DNA
+  const rawDNA = binaryToDNA(huffmanEncoded);
+  
+  // Get full binary string for UI preview purposes
   const binaryString = await fileToBinary(file);
-  const rawDNA = binaryToDNA(binaryString);
-  const { encoded: huffmanEncoded, codeTable } = huffmanEncode(rawDNA);
 
   const codeTableObj: Record<string, string> = {};
-  codeTable.forEach((code, char) => {
-    codeTableObj[char] = code;
+  codeTable.forEach((code, byte) => {
+    codeTableObj[`0x${byte.toString(16).padStart(2, "0").toUpperCase()}`] = code;
   });
 
   const huffmanByteSize = Math.ceil(huffmanEncoded.length / 8);
