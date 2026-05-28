@@ -13,7 +13,7 @@ import {
   Binary,
   Fingerprint,
   Activity,
-  Github,
+  ExternalLink,
   FileText,
   Cpu,
   Layers,
@@ -82,40 +82,35 @@ function TypingDNA() {
     }
   }, [chars, strand.length]);
 
-  const colorMap: Record<string, string> = {
-    A: "#3b82f6",
-    T: "#10b981",
-    C: "#f59e0b",
-    G: "#ef4444",
-  };
-
   return (
     <div
       style={{
         fontFamily: "var(--font-dm-mono)",
-        fontSize: "1.1rem",
-        letterSpacing: "0.15em",
+        fontSize: "0.85rem",
+        letterSpacing: "0.3em",
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
         gap: "2px",
         userSelect: "none",
+        color: "#64748b",
+        lineHeight: 1.8
       }}
     >
       {strand.slice(0, chars).split("").map((c, i) => (
         <span
           key={i}
           style={{
-            color: colorMap[c] || "#64748b",
-            fontWeight: 700,
-            opacity: i === chars - 1 ? 0.6 : 1,
+            color: c === "G" || c === "C" ? "var(--accent-primary)" : "#64748b",
+            fontWeight: c === "G" || c === "C" ? 700 : 500,
+            opacity: i === chars - 1 ? 0.8 : 1,
             transition: "opacity 0.3s",
           }}
         >
           {c}
         </span>
       ))}
-      <span style={{ color: "var(--accent-primary)", animation: "blink 1s step-end infinite" }}>▎</span>
+      <span style={{ color: "var(--accent-primary)", animation: "blink 1s step-end infinite" }}>_</span>
     </div>
   );
 }
@@ -244,7 +239,7 @@ export default function Home() {
               borderRadius: "8px",
             }}
           >
-            <Github size={16} /> View Repository
+            <ExternalLink size={16} /> View Repository
           </a>
         </div>
 
@@ -252,11 +247,9 @@ export default function Home() {
         <div
           style={{
             marginTop: "3rem",
-            padding: "1.25rem 2rem",
-            borderRadius: "12px",
-            backgroundColor: "rgba(255,255,255,0.6)",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.5)",
+            padding: "1rem",
+            borderTop: "1px solid rgba(0,0,0,0.05)",
+            borderBottom: "1px solid rgba(0,0,0,0.05)",
             maxWidth: "640px",
             margin: "3rem auto 0",
           }}
