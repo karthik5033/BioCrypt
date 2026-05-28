@@ -59,7 +59,7 @@ export default function EncryptPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          <Lock size={28} color="var(--accent-teal)" />
+          <Lock size={28} color="var(--accent-primary)" />
           Mutation Cipher
         </h1>
         <p className={styles.subtitle}>
@@ -174,7 +174,7 @@ export default function EncryptPage() {
                     <tr key={i}>
                       <td className={styles.mono}>{m.position}</td>
                       <td className={styles.mono} style={{ color: "var(--text-muted)" }}>{m.original}</td>
-                      <td className={styles.mono} style={{ color: "var(--accent-teal)", fontWeight: 500 }}>{m.mutated}</td>
+                      <td className={styles.mono} style={{ color: "var(--accent-primary)", fontWeight: 500 }}>{m.mutated}</td>
                       <td>
                         <span className={styles.badge}>{m.type}</span>
                       </td>

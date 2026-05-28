@@ -111,7 +111,7 @@ export default function RecoverPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          <Activity size={28} color="var(--accent-teal)" />
+          <Activity size={28} color="var(--accent-primary)" />
           Recovery Engine
         </h1>
         <p className={styles.subtitle}>
@@ -193,7 +193,7 @@ export default function RecoverPage() {
             <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               Needleman-Wunsch Alignment Matrix
               {animatedRows < result.dpMatrix.length && (
-                <span style={{ fontSize: "0.75rem", color: "var(--accent-teal)", fontWeight: "normal", display: "flex", alignItems: "center", gap: "4px" }}>
+                <span style={{ fontSize: "0.75rem", color: "var(--accent-primary)", fontWeight: "normal", display: "flex", alignItems: "center", gap: "4px" }}>
                   <div className="spinner-teal" style={{ width: "12px", height: "12px", borderWidth: "1.5px" }} />
                   Computing...
                 </span>

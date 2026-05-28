@@ -55,7 +55,7 @@
 
 .textarea:focus {
   outline: none;
-  border-color: var(--accent-teal);
+  border-color: var(--accent-primary);
 }
 
 .inputRow {
@@ -83,7 +83,7 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--accent-teal);
+  border-color: var(--accent-primary);
 }
 
 .checkboxGroup {
@@ -103,7 +103,7 @@
 }
 
 .checkbox {
-  accent-color: var(--accent-teal);
+  accent-color: var(--accent-primary);
   width: 16px;
   height: 16px;
 }
@@ -142,7 +142,7 @@
 .mutatedChar {
   position: relative;
   display: inline-block;
-  color: var(--accent-teal);
+  color: var(--accent-primary);
   font-weight: 700;
 }
 
@@ -153,7 +153,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background-color: var(--accent-teal);
+  background-color: var(--accent-primary);
 }
 
 .tableContainer {
@@ -191,7 +191,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   background-color: rgba(13, 148, 136, 0.1);
-  color: var(--accent-teal);
+  color: var(--accent-primary);
 }
 
 .mono {

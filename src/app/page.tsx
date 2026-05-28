@@ -14,7 +14,7 @@ export default function Home() {
           padding: "0.25rem 0.75rem",
           borderRadius: "9999px",
           backgroundColor: "rgba(13, 148, 136, 0.1)",
-          color: "var(--accent-teal)",
+          color: "var(--accent-primary)",
           fontSize: "0.75rem",
           fontWeight: 600,
           textTransform: "uppercase",
@@ -28,24 +28,24 @@ export default function Home() {
           fontSize: "3.75rem",
           fontWeight: 800,
           lineHeight: 1.1,
-          color: "#0f172a",
+          color: "var(--foreground)",
           marginBottom: "1.5rem",
           letterSpacing: "-0.03em",
-          textShadow: "0px 2px 15px rgba(255, 255, 255, 0.9)"
+          textShadow: "0px 2px 15px rgba(0, 0, 0, 0.5)"
         }}>
           DNA-Inspired <br />
-          <span style={{ color: "var(--accent-teal)", textShadow: "0px 2px 15px rgba(255, 255, 255, 0.9)" }}>Self-Healing</span> Encryption
+          <span style={{ color: "var(--accent-primary)", textShadow: "0px 2px 15px rgba(245, 158, 11, 0.4)" }}>Self-Healing</span> Encryption
         </h1>
         
         <p style={{
           fontSize: "1.25rem",
-          fontWeight: 500,
-          color: "#334155",
+          fontWeight: 400,
+          color: "var(--text-muted)",
           lineHeight: 1.6,
           marginBottom: "3rem",
           maxWidth: "600px",
           margin: "0 auto 3rem auto",
-          textShadow: "0px 1px 5px rgba(255, 255, 255, 0.8)"
+          textShadow: "0px 1px 5px rgba(0, 0, 0, 0.5)"
         }}>
           A resilient storage engine that models data corruption and recovery using sequence alignment algorithms from computational biology.
         </p>
@@ -85,7 +85,7 @@ export default function Home() {
         <div style={{
           position: "absolute",
           fontFamily: "var(--font-dm-mono)",
-          color: "var(--accent-teal)",
+          color: "var(--accent-primary)",
           fontSize: "1.5rem",
           letterSpacing: "0.5rem",
           whiteSpace: "nowrap",
@@ -109,17 +109,17 @@ export default function Home() {
           {
             title: "Huffman DNA Encoding",
             desc: "Convert binary data to nucleotide sequences (A, T, C, G) and compress optimally.",
-            icon: <Dna size={24} color="var(--accent-teal)" />
+            icon: <Dna size={24} color="var(--accent-primary)" />
           },
           {
             title: "Mutation Cipher",
             desc: "Encrypt strands using biologically-inspired, reversible key-seeded mutations.",
-            icon: <Lock size={24} color="var(--accent-teal)" />
+            icon: <Lock size={24} color="var(--accent-primary)" />
           },
           {
             title: "Needleman-Wunsch Recovery",
             desc: "Reconstruct corrupted segments via dynamic programming sequence alignment.",
-            icon: <ShieldAlert size={24} color="var(--accent-teal)" />
+            icon: <ShieldAlert size={24} color="var(--accent-primary)" />
           }
         ].map((feature, i) => (
           <div key={i} className="clinical-card" style={{ padding: "2rem", textAlign: "left" }}>

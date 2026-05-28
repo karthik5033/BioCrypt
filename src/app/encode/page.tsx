@@ -86,7 +86,7 @@ export default function EncodePage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          <Dna size={28} color="var(--accent-teal)" />
+          <Dna size={28} color="var(--accent-primary)" />
           DNA Encoder
         </h1>
         <p className={styles.subtitle}>
@@ -116,7 +116,7 @@ export default function EncodePage() {
         />
         <Upload
           size={32}
-          color={isDragging ? "var(--accent-teal)" : "var(--text-muted)"}
+          color={isDragging ? "var(--accent-primary)" : "var(--text-muted)"}
         />
         <p className={styles.uploadText}>
           {isDragging
@@ -130,7 +130,7 @@ export default function EncodePage() {
       {file && !result && (
         <div className={`${styles.fileInfo} fade-in`}>
           <div className={styles.fileDetails}>
-            <FileText size={20} color="var(--accent-teal)" />
+            <FileText size={20} color="var(--accent-primary)" />
             <div>
               <p className={styles.fileName}>{file.name}</p>
               <p className={styles.fileSize}>{formatBytes(file.size)}</p>

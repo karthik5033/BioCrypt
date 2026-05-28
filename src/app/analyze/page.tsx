@@ -34,7 +34,7 @@ export default function AnalyzePage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          <BarChart3 size={28} color="var(--accent-teal)" />
+          <BarChart3 size={28} color="var(--accent-primary)" />
           Complexity Dashboard
         </h1>
         <p className={styles.subtitle}>
@@ -86,8 +86,8 @@ export default function AnalyzePage() {
             
             <div className={styles.barRow}>
               <div className={styles.barLabel}>
-                <span style={{ color: "var(--accent-teal)", fontWeight: 600 }}>Huffman DNA Encoding</span>
-                <span style={{ color: "var(--accent-teal)", fontWeight: 600 }}>
+                <span style={{ color: "var(--accent-primary)", fontWeight: 600 }}>Huffman DNA Encoding</span>
+                <span style={{ color: "var(--accent-primary)", fontWeight: 600 }}>
                   {metrics.spaceDna > 0 ? `${metrics.spaceDna} MB` : "-"}
                 </span>
               </div>
@@ -149,9 +149,9 @@ export default function AnalyzePage() {
                 className={styles.entropyCircle} 
                 style={{ 
                   transform: `rotate(${metrics.entropy > 0 ? 45 : -135}deg)`,
-                  borderTopColor: metrics.entropy > 0 ? "var(--accent-teal)" : "var(--border-light)",
-                  borderRightColor: metrics.entropy > 0 ? "var(--accent-teal)" : "var(--border-light)",
-                  borderBottomColor: metrics.entropy > 80 ? "var(--accent-teal)" : "var(--border-light)"
+                  borderTopColor: metrics.entropy > 0 ? "var(--accent-primary)" : "var(--border-light)",
+                  borderRightColor: metrics.entropy > 0 ? "var(--accent-primary)" : "var(--border-light)",
+                  borderBottomColor: metrics.entropy > 80 ? "var(--accent-primary)" : "var(--border-light)"
                 }}
               >
                 <span 

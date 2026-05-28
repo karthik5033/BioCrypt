@@ -8,18 +8,18 @@ export default function Navbar() {
       alignItems: "center",
       justifyContent: "space-between",
       padding: "1rem 2rem",
-      backgroundColor: "rgba(255, 255, 255, 0.65)",
+      backgroundColor: "rgba(15, 23, 42, 0.7)",
       backdropFilter: "blur(12px)",
-      borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
+      borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
       position: "sticky",
       top: 0,
       zIndex: 50,
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-        <Fingerprint color="var(--accent-teal)" size={24} />
+        <Fingerprint color="var(--accent-primary)" size={24} />
         <Link href="/" style={{
           fontFamily: "var(--font-dm-mono)",
-          color: "var(--accent-teal)",
+          color: "var(--accent-primary)",
           fontWeight: 600,
           fontSize: "1.25rem",
           letterSpacing: "-0.025em"

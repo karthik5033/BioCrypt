@@ -20,8 +20,8 @@ export default function PipelineStage() {
   return (
     <div style={{
       width: "100%",
-      borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
-      backgroundColor: "rgba(255, 255, 255, 0.65)",
+      borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+      backgroundColor: "rgba(15, 23, 42, 0.7)",
       backdropFilter: "blur(12px)",
       padding: "1rem 2rem",
       display: "flex",
@@ -72,28 +72,28 @@ export default function PipelineStage() {
               }}
             >
               <div style={{
-                backgroundColor: "rgba(255,255,255,0.8)",
+                backgroundColor: "rgba(15, 23, 42, 0.8)",
                 borderRadius: "50%",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center"
               }}>
                 {isCompleted ? (
-                  <CheckCircle2 color="var(--accent-teal)" size={24} />
+                  <CheckCircle2 color="var(--accent-primary)" size={24} />
                 ) : isActive ? (
                   <div style={{ 
                     width: "24px", 
                     height: "24px", 
                     borderRadius: "50%", 
-                    border: "2px solid var(--accent-teal)",
+                    border: "2px solid var(--accent-primary)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "var(--accent-teal)" }} />
+                    <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "var(--accent-primary)" }} />
                   </div>
                 ) : (
-                  <Circle color="var(--border-light)" size={24} fill="white" />
+                  <Circle color="var(--border-light)" size={24} fill="transparent" />
                 )}
               </div>
               <span style={{

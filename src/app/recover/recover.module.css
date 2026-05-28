@@ -53,7 +53,7 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--accent-teal);
+  border-color: var(--accent-primary);
 }
 
 .recoveredSequenceBox {
@@ -69,7 +69,7 @@
 }
 
 .recoveredChar {
-  color: var(--accent-teal);
+  color: var(--accent-primary);
   font-weight: 700;
   background-color: rgba(13, 148, 136, 0.1);
   padding: 0 2px;
@@ -102,7 +102,7 @@
 .statValueAccent {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--accent-teal);
+  color: var(--accent-primary);
 }
 
 .dpTableContainer {
