@@ -321,6 +321,22 @@
   border-radius: 8px;
   background-color: rgba(248, 250, 252, 0.7);
   border: 1px solid var(--border-light);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.kmpStrand::-webkit-scrollbar {
+  width: 6px;
+}
+.kmpStrand::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kmpStrand::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+.kmpStrand::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .kmpMatch {
