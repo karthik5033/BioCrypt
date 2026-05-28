@@ -1,0 +1,148 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  margin-top: 0.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  font-family: var(--font-dm-mono);
+  font-size: 1rem;
+  color: var(--foreground);
+  background-color: var(--background);
+  transition: border-color 0.2s ease;
+  letter-spacing: 0.1em;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent-teal);
+}
+
+.recoveredSequenceBox {
+  background-color: var(--surface-hover);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 1.5rem;
+  font-family: var(--font-dm-mono);
+  font-size: 1.25rem;
+  line-height: 1.6;
+  word-break: break-all;
+  letter-spacing: 0.1em;
+}
+
+.recoveredChar {
+  color: var(--accent-teal);
+  font-weight: 700;
+  background-color: rgba(13, 148, 136, 0.1);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.statValueAccent {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent-teal);
+}
+
+.dpTableContainer {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+
+.dpTable {
+  border-collapse: collapse;
+  font-family: var(--font-dm-mono);
+  font-size: 0.875rem;
+}
+
+.dpTable th, .dpTable td {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+  transition: background-color 0.3s ease;
+}
+
+.dpTable th {
+  background-color: var(--surface-hover);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.dpCellEmpty {
+  background-color: white;
+  color: transparent;
+}
+
+.dpCellFilled {
+  color: var(--foreground);
+  animation: popIn 0.3s ease-out forwards;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}

@@ -64,6 +64,24 @@ code, pre {
   }
 }
 
+.spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-teal {
+  border: 2px solid rgba(13, 148, 136, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--accent-teal);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Base button styles */
 .btn-primary {
   background-color: var(--accent-teal);
