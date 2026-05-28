@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
-import Sidebar from "@/components/layout/Sidebar";
+import PipelineStage from "@/components/layout/PipelineStage";
 import Footer from "@/components/layout/Footer";
 
 const dmSans = DM_Sans({
@@ -30,14 +30,33 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
       <body>
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          style={{ 
+            position: "fixed", 
+            top: 0, 
+            left: 0, 
+            width: "100%", 
+            height: "100%", 
+            objectFit: "cover", 
+            zIndex: -1, 
+            opacity: 0.1, 
+            pointerEvents: "none" 
+          }}
+        >
+          <source src="/dna-video.mp4" type="video/mp4" />
+        </video>
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
           <Navbar />
-          <div style={{ display: "flex", flex: 1 }}>
-            <Sidebar />
-            <main style={{ flex: 1, padding: "2rem", backgroundColor: "var(--surface-hover)" }}>
+          <PipelineStage />
+          <main style={{ flex: 1, padding: "2rem", backgroundColor: "transparent" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
               {children}
-            </main>
-          </div>
+            </div>
+          </main>
           <Footer />
         </div>
       </body>
