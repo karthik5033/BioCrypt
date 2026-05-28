@@ -1,0 +1,266 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  margin-top: 0.5rem;
+}
+
+.uploadZone {
+  border: 2px dashed var(--border-light);
+  border-radius: 8px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  cursor: pointer;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.uploadZone:hover, .uploadZoneDrag {
+  border-color: var(--accent-teal);
+  background-color: var(--surface-hover);
+}
+
+.uploadText {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.uploadHint {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: white;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+}
+
+.fileDetails {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fileName {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.fileSize {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.convertBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.panel {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.panelTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.panelLabel {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.sequenceBox {
+  background-color: var(--surface-hover);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 1rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.binaryCode {
+  color: var(--foreground);
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.dnaCode {
+  font-weight: 500;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.cursor {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.statsCard {
+  padding: 1.5rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.statValueAccent {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent-teal);
+}
+
+.compressionBarWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.compressionBarLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.compressionBarTrack {
+  height: 8px;
+  background-color: var(--border-light);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.compressionBarFill {
+  height: 100%;
+  background-color: var(--accent-teal);
+  border-radius: 9999px;
+  transition: width 1s ease-out;
+}
+
+.codeTableGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.codeTableEntry {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--surface-hover);
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+}
+
+.codeTableChar {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-family: var(--font-dm-mono);
+}
+
+.codeTableArrow {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.codeTableCode {
+  color: var(--foreground);
+  font-weight: 500;
+}
