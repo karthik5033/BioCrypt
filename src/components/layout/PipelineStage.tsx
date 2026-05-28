@@ -20,14 +20,15 @@ export default function PipelineStage() {
   return (
     <div style={{
       width: "100%",
-      borderBottom: "1px solid var(--border-light)",
-      backgroundColor: "var(--background)",
+      borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
+      backgroundColor: "rgba(255, 255, 255, 0.65)",
+      backdropFilter: "blur(12px)",
       padding: "1rem 2rem",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       position: "sticky",
-      top: "64px",
+      top: "72px",
       zIndex: 40
     }}>
       <div style={{
@@ -66,12 +67,12 @@ export default function PipelineStage() {
                 position: "relative",
                 zIndex: 1,
                 textDecoration: "none",
-                backgroundColor: "var(--background)",
+                backgroundColor: "transparent",
                 padding: "0 0.5rem"
               }}
             >
               <div style={{
-                backgroundColor: "var(--background)",
+                backgroundColor: "rgba(255,255,255,0.8)",
                 borderRadius: "50%",
                 display: "flex",
                 alignItems: "center",
@@ -92,7 +93,7 @@ export default function PipelineStage() {
                     <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "var(--accent-teal)" }} />
                   </div>
                 ) : (
-                  <Circle color="var(--border-light)" size={24} fill="var(--background)" />
+                  <Circle color="var(--border-light)" size={24} fill="white" />
                 )}
               </div>
               <span style={{
