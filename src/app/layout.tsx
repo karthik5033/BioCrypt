@@ -48,7 +48,7 @@ export default function RootLayout({
         >
           <source src="/dna-video.mp4" type="video/mp4" />
         </video>
-        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative", zIndex: 1, backgroundColor: "rgba(250, 250, 250, 0.7)", backdropFilter: "blur(5px)" }}>
+        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", position: "relative", zIndex: 1, backgroundColor: "rgba(255, 255, 255, 0.75)" }}>
           <Navbar />
           <PipelineStage />
           <main style={{ flex: 1, padding: "2rem", backgroundColor: "transparent" }}>

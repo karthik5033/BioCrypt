@@ -25,24 +25,27 @@ export default function Home() {
         </div>
         
         <h1 style={{
-          fontSize: "3.5rem",
-          fontWeight: 700,
+          fontSize: "3.75rem",
+          fontWeight: 800,
           lineHeight: 1.1,
-          color: "var(--foreground)",
+          color: "#0f172a",
           marginBottom: "1.5rem",
-          letterSpacing: "-0.03em"
+          letterSpacing: "-0.03em",
+          textShadow: "0px 2px 15px rgba(255, 255, 255, 0.9)"
         }}>
           DNA-Inspired <br />
-          <span style={{ color: "var(--accent-teal)" }}>Self-Healing</span> Encryption
+          <span style={{ color: "var(--accent-teal)", textShadow: "0px 2px 15px rgba(255, 255, 255, 0.9)" }}>Self-Healing</span> Encryption
         </h1>
         
         <p style={{
           fontSize: "1.25rem",
-          color: "var(--text-muted)",
+          fontWeight: 500,
+          color: "#334155",
           lineHeight: 1.6,
           marginBottom: "3rem",
           maxWidth: "600px",
-          margin: "0 auto 3rem auto"
+          margin: "0 auto 3rem auto",
+          textShadow: "0px 1px 5px rgba(255, 255, 255, 0.8)"
         }}>
           A resilient storage engine that models data corruption and recovery using sequence alignment algorithms from computational biology.
         </p>
