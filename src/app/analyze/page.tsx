@@ -92,7 +92,7 @@ export default function AnalyzePage() {
       const huffmanBytes = encoderResult?.stats.huffmanByteSize || 46080;
       
       const compRatio = encoderResult?.stats.compressionRatio 
-        ? parseFloat(encoderResult.stats.compressionRatio) 
+        ? encoderResult.stats.compressionRatio 
         : 2.22;
         
       const mutApplied = cipherResult?.mutationMap.length || 28;

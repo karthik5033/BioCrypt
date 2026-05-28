@@ -19,6 +19,7 @@ export default function EncodePage() {
   const [result, setResult] = useState<EncoderResult | null>(null);
   const [isEncoding, setIsEncoding] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [typedDNA, setTypedDNA] = useState("");
   const { setPipelineStep, setOriginalFile, setEncoderResult } = useBioCrypt();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
