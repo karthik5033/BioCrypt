@@ -724,47 +724,62 @@ export default function Home() {
       <section
         ref={cta.ref}
         style={{
-          padding: "5rem 1.5rem 6rem",
-          textAlign: "center",
+          padding: "5rem 1.5rem 8rem",
+          display: "flex",
+          justifyContent: "center",
           ...revealStyle(cta.visible),
         }}
       >
-        <h2
+        <div
+          className="clinical-card"
           style={{
-            fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
-            fontWeight: 700,
-            color: "#0f172a",
-            marginBottom: "1rem",
-            textShadow: "0 2px 15px rgba(255,255,255,0.9)",
+            padding: "4rem 2rem",
+            textAlign: "center",
+            maxWidth: "800px",
+            width: "100%",
+            borderRadius: "24px",
+            border: "1px solid rgba(255,255,255,0.8)",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
           }}
         >
-          Ready to See It In Action?
-        </h2>
-        <p
-          style={{
-            color: "#64748b",
-            maxWidth: "480px",
-            margin: "0 auto 2rem",
-            lineHeight: 1.6,
-            textShadow: "0 1px 5px rgba(255,255,255,0.7)",
-          }}
-        >
-          Upload a file, watch it transform into DNA, encrypt it with biological mutations, and recover it from corruption — all in real-time.
-        </p>
-        <Link
-          href="/encode"
-          className="btn-primary"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontSize: "1.1rem",
-            padding: "1rem 2.5rem",
-            borderRadius: "10px",
-          }}
-        >
-          Start the Pipeline <ArrowRight size={18} />
-        </Link>
+          <h2
+            style={{
+              fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+              fontWeight: 800,
+              color: "#0f172a",
+              marginBottom: "1.25rem",
+              letterSpacing: "-0.02em"
+            }}
+          >
+            Ready to See It In Action?
+          </h2>
+          <p
+            style={{
+              color: "#334155",
+              fontSize: "1.1rem",
+              maxWidth: "520px",
+              margin: "0 auto 2.5rem",
+              lineHeight: 1.7,
+            }}
+          >
+            Upload a file, watch it transform into DNA, encrypt it with biological mutations, and recover it from corruption — all in real-time.
+          </p>
+          <Link
+            href="/encode"
+            className="btn-primary"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              fontSize: "1.1rem",
+              padding: "1rem 2.5rem",
+              borderRadius: "10px",
+              fontWeight: 600,
+            }}
+          >
+            Start the Pipeline <ArrowRight size={18} />
+          </Link>
+        </div>
       </section>
 
       {/* Blink keyframe injected inline */}
