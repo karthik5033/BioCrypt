@@ -33,12 +33,13 @@ export default function EncodePage() {
 
     const timer = setInterval(() => {
       if (idx < dnaPreview.length) {
-        setTypedDNA((prev) => prev + dnaPreview[idx]);
+        const char = dnaPreview[idx];
+        setTypedDNA((prev) => prev + (char || ""));
         idx++;
       } else {
         clearInterval(timer);
       }
-    }, 5);
+    }, 20);
 
     return () => clearInterval(timer);
   }, [result]);
@@ -232,9 +233,11 @@ export default function EncodePage() {
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Ratio</span>
+                <span className={styles.statLabel} title="Highly compressed files (like JPG/PDF) will yield ~1.00x">
+                  Ratio ⓘ
+                </span>
                 <span className={styles.statValueAccent}>
-                  {result.stats.compressionRatio}x
+                  {result.stats.compressionRatio.toFixed(2)}x
                 </span>
               </div>
             </div>
