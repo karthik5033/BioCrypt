@@ -1,40 +1,61 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Dna, Activity, RotateCcw } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Activity, RotateCcw, Sparkles, Clock, Cpu, ChevronRight, ArrowDownRight } from "lucide-react";
 import { needlemanWunsch, type RecoveryResult } from "@/lib/recoveryEngine";
 import styles from "./recover.module.css";
+
+/* ── Presets for quick demo ── */
+const PRESETS = [
+  {
+    label: "Basic Recovery",
+    corrupted: "ATCG??TAAGT",
+    reference: "ATCGGCTAAGT",
+  },
+  {
+    label: "Multi-Gap",
+    corrupted: "AT??GC??AGT",
+    reference: "ATCGGCTAAGT",
+  },
+  {
+    label: "Long Strand",
+    corrupted: "ATCGGC??AGTCG??TCGA??CG",
+    reference: "ATCGGCTAAGTCGATCGATCGCG",
+  },
+];
 
 export default function RecoverPage() {
   const [corruptedInput, setCorruptedInput] = useState("ATCG??TAAGT");
   const [referenceInput, setReferenceInput] = useState("ATCGGCTAAGT");
-  
+
   const [result, setResult] = useState<RecoveryResult | null>(null);
   const [animatedRows, setAnimatedRows] = useState<number>(0);
-  const animationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [executionTime, setExecutionTime] = useState<number>(0);
+  const animationTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const handleRecover = () => {
+  const handleRecover = useCallback(() => {
     if (!corruptedInput || !referenceInput) return;
-    
-    // Clean inputs: only ATCG and ? allowed
+
     const cleanCorrupted = corruptedInput.toUpperCase().replace(/[^ATCG?]/g, "");
     const cleanRef = referenceInput.toUpperCase().replace(/[^ATCG]/g, "");
-    
+
     setCorruptedInput(cleanCorrupted);
     setReferenceInput(cleanRef);
 
+    const t0 = performance.now();
     const res = needlemanWunsch(cleanCorrupted, cleanRef);
+    const t1 = performance.now();
+
+    setExecutionTime(parseFloat((t1 - t0).toFixed(2)));
     setResult(res);
     setAnimatedRows(0);
-  };
+  }, [corruptedInput, referenceInput]);
 
   // Animate DP table row by row
   useEffect(() => {
     if (!result) return;
-    
+
     const totalRows = result.dpMatrix.length;
-    
-    // Clear any existing timer
     if (animationTimerRef.current) clearInterval(animationTimerRef.current);
 
     animationTimerRef.current = setInterval(() => {
@@ -52,19 +73,15 @@ export default function RecoverPage() {
     };
   }, [result]);
 
-  // Render the reconstructed sequence formatting
+  // Render recovered sequence with highlighted chars
   const renderRecoveredSequence = () => {
     if (!result) return null;
-    
-    // The recoveredSequence has format ATCG[G]CTAAGT
-    // We split by [ and ] to highlight the recovered parts
     const parts = result.recoveredSequence.split(/(\[[^\]]+\])/);
 
     return (
       <div className={styles.recoveredSequenceBox}>
         {parts.map((part, i) => {
           if (part.startsWith("[") && part.endsWith("]")) {
-            // Strip brackets for display, but wrap in span
             return (
               <span key={i} className={styles.recoveredChar}>
                 {part.slice(1, -1)}
@@ -77,25 +94,88 @@ export default function RecoverPage() {
     );
   };
 
-  // Helper to calculate cell color based on value
-  const getCellColor = (val: number, maxVal: number, minVal: number) => {
-    // Normalize value between 0 and 1
-    const range = maxVal - minVal;
-    if (range === 0) return "white";
-    
-    const normalized = (val - minVal) / range;
-    // Map to a teal scale: 
-    // rgb(255,255,255) to rgb(13, 148, 136) -> #0D9488
-    
-    // Teal is roughly R:13, G:148, B:136
-    const r = Math.round(255 - normalized * (255 - 13));
-    const g = Math.round(255 - normalized * (255 - 148));
-    const b = Math.round(255 - normalized * (255 - 136));
-    
-    return `rgb(${r}, ${g}, ${b})`;
+  // Render the before/after alignment view
+  const renderAlignmentComparison = () => {
+    if (!result) return null;
+
+    return (
+      <div className={styles.alignmentBox}>
+        <div className={styles.alignmentRow}>
+          <span className={styles.alignmentLabel}>Corrupted</span>
+          <span>
+            {corruptedInput.split("").map((c, i) => (
+              <span
+                key={i}
+                className={c === "?" ? styles.alignmentCorrupt : styles.alignmentMatch}
+              >
+                {c}
+              </span>
+            ))}
+          </span>
+        </div>
+        <div className={styles.alignmentRow}>
+          <span className={styles.alignmentLabel}>Reference</span>
+          <span className={styles.alignmentMatch}>{referenceInput}</span>
+        </div>
+        <div className={styles.alignmentRow}>
+          <span className={styles.alignmentLabel}>Recovered</span>
+          <span>
+            {result.recoveredSequence.split(/(\[[^\]]+\])/).map((part, i) => {
+              if (part.startsWith("[") && part.endsWith("]")) {
+                return (
+                  <span key={i} className={styles.alignmentRecovered}>
+                    {part.slice(1, -1)}
+                  </span>
+                );
+              }
+              return <span key={i} className={styles.alignmentMatch}>{part}</span>;
+            })}
+            <span style={{ color: "#10b981", fontWeight: 800, marginLeft: "0.5rem" }}>✓</span>
+          </span>
+        </div>
+      </div>
+    );
   };
 
-  // Find max and min for heatmap scaling
+  // Traceback path character-by-character
+  const renderTracebackPath = () => {
+    if (!result) return null;
+    const parts = result.recoveredSequence.split(/(\[[^\]]+\])/);
+
+    return (
+      <div className={styles.tracebackRow}>
+        {parts.map((part, i) => {
+          if (part.startsWith("[") && part.endsWith("]")) {
+            return (
+              <div key={i} className={styles.tracebackCharRecovered}>
+                {part.slice(1, -1)}
+              </div>
+            );
+          }
+          return part.split("").map((c, j) => (
+            <div key={`${i}-${j}`} className={styles.tracebackChar}>
+              {c}
+            </div>
+          ));
+        })}
+      </div>
+    );
+  };
+
+  // Cell color for heatmap
+  const getCellColor = (val: number, maxVal: number, minVal: number) => {
+    const range = maxVal - minVal;
+    if (range === 0) return "rgba(255,255,255,0.5)";
+
+    const normalized = (val - minVal) / range;
+    // White → Amber heatmap
+    const r = Math.round(255 - normalized * (255 - 245));
+    const g = Math.round(255 - normalized * (255 - 158));
+    const b = Math.round(255 - normalized * (255 - 11));
+    return `rgba(${r}, ${g}, ${b}, ${0.15 + normalized * 0.55})`;
+  };
+
+  // DP table min/max
   let maxDpVal = -Infinity;
   let minDpVal = Infinity;
   if (result) {
@@ -107,99 +187,195 @@ export default function RecoverPage() {
     }
   }
 
+  // Traceback path for highlighting
+  const tracebackCells = new Set<string>();
+  if (result) {
+    let ti = result.dpMatrix.length - 1;
+    let tj = result.dpMatrix[0].length - 1;
+    while (ti > 0 || tj > 0) {
+      tracebackCells.add(`${ti}-${tj}`);
+      const src = result.dpMatrix[ti][tj].source;
+      if (src === "diag" && ti > 0 && tj > 0) { ti--; tj--; }
+      else if (src === "up" && ti > 0) { ti--; }
+      else if (tj > 0) { tj--; }
+      else break;
+    }
+    tracebackCells.add("0-0");
+  }
+
   return (
     <div className={styles.container}>
+      {/* Header */}
       <div className={styles.header}>
+        <div className={styles.badge}>
+          <Cpu size={12} /> Needleman-Wunsch DP
+        </div>
         <h1 className={styles.title}>
           <Activity size={28} color="var(--accent-primary)" />
           Recovery Engine
         </h1>
         <p className={styles.subtitle}>
-          Reconstruct corrupted DNA using Needleman-Wunsch dynamic programming alignment.
+          Reconstruct corrupted DNA segments using global sequence alignment.
+          The DP table visualizes the optimal edit path in real-time.
         </p>
       </div>
 
       {/* Input Section */}
       <div className={`clinical-card ${styles.card}`}>
-        <div>
-          <label className={styles.label}>Corrupted DNA Sequence (Use ? for unknown)</label>
-          <input 
-            type="text"
-            className={styles.input}
-            placeholder="e.g. ATCG??TAAGT"
-            value={corruptedInput}
-            onChange={(e) => setCorruptedInput(e.target.value.toUpperCase())}
-          />
+        <div className={styles.sectionTitle}>
+          <span className={styles.sectionNumber}>1</span>
+          Input Sequences
         </div>
 
-        <div>
-          <label className={styles.label}>Reference Fragment / Checksum</label>
-          <input 
-            type="text"
-            className={styles.input}
-            placeholder="e.g. ATCGGCTAAGT"
-            value={referenceInput}
-            onChange={(e) => setReferenceInput(e.target.value.toUpperCase())}
-          />
-        </div>
-
-        <button 
-          className="btn-primary" 
-          style={{ alignSelf: "flex-start", display: "flex", alignItems: "center", gap: "0.5rem" }}
-          onClick={handleRecover}
-          disabled={!corruptedInput || !referenceInput}
-        >
-          <RotateCcw size={16} /> Run Recovery
-        </button>
-      </div>
-
-      {/* Results Section */}
-      {result && (
-        <div className="fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-          
-          {/* SECTION 1 — Recovered Sequence */}
-          <div className={`clinical-card ${styles.card}`}>
-            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-              Recovered Sequence
-            </h3>
-            {renderRecoveredSequence()}
+        <div className={styles.inputGrid}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>
+              Corrupted DNA
+              <span className={styles.labelHint}> — Use ? for unknown characters</span>
+            </label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="e.g. ATCG??TAAGT"
+              value={corruptedInput}
+              onChange={(e) => setCorruptedInput(e.target.value.toUpperCase())}
+            />
           </div>
 
-          {/* SECTION 3 — Stats (Placed above DP table for better flow) */}
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>
+              Reference Fragment
+              <span className={styles.labelHint}> — Known-good checksum</span>
+            </label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="e.g. ATCGGCTAAGT"
+              value={referenceInput}
+              onChange={(e) => setReferenceInput(e.target.value.toUpperCase())}
+            />
+          </div>
+        </div>
+
+        <div className={styles.buttonRow}>
+          <button
+            className="btn-primary"
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem", borderRadius: "8px" }}
+            onClick={handleRecover}
+            disabled={!corruptedInput || !referenceInput}
+          >
+            <RotateCcw size={16} /> Run Recovery
+          </button>
+
+          <div style={{ height: "1px", width: "1px" }} />
+
+          {PRESETS.map((p, i) => (
+            <button
+              key={i}
+              className={styles.presetBtn}
+              onClick={() => {
+                setCorruptedInput(p.corrupted);
+                setReferenceInput(p.reference);
+              }}
+            >
+              <Sparkles size={12} /> {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Results */}
+      {result && (
+        <div className="fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+
+          {/* Stats */}
           <div className={`clinical-card ${styles.card}`}>
-            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-              Recovery Statistics
-            </h3>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionNumber}>2</span>
+              Recovery Results
+            </div>
+
             <div className={styles.statsGrid}>
               <div className={styles.statItem}>
                 <span className={styles.statLabel}>Edit Distance</span>
                 <span className={styles.statValue}>{result.stats.editDistance}</span>
+                <span className={styles.statUnit}>operations</span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Characters Recovered</span>
+                <span className={styles.statLabel}>Chars Recovered</span>
                 <span className={styles.statValueAccent}>{result.stats.charsRecovered}</span>
+                <span className={styles.statUnit}>nucleotides</span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Recovery Accuracy</span>
-                <span className={styles.statValue}>
-                  {result.stats.recoveryAccuracy}%
+                <span className={styles.statLabel}>Accuracy</span>
+                <span className={styles.statValueAccent}>{result.stats.recoveryAccuracy}%</span>
+                <span className={styles.statUnit}>match rate</span>
+              </div>
+              <div className={styles.statItem}>
+                <span className={styles.statLabel}>Execution Time</span>
+                <span className={styles.statValue}>{executionTime}</span>
+                <span className={styles.statUnit}>ms</span>
+              </div>
+            </div>
+
+            <div className={styles.complexityRow}>
+              <div className={styles.complexityBadge}>
+                <span className={styles.complexityBadgeLabel}>Time:</span>
+                <span className={styles.complexityBadgeValue}>O(N × M)</span>
+              </div>
+              <div className={styles.complexityBadge}>
+                <span className={styles.complexityBadgeLabel}>Space:</span>
+                <span className={styles.complexityBadgeValue}>O(N × M)</span>
+              </div>
+              <div className={styles.complexityBadge}>
+                <span className={styles.complexityBadgeLabel}>Table Size:</span>
+                <span className={styles.complexityBadgeValue}>
+                  {(corruptedInput.length + 1)} × {(referenceInput.length + 1)}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* SECTION 2 — Needleman-Wunsch DP Table */}
+          {/* Alignment Comparison */}
           <div className={`clinical-card ${styles.card}`}>
-            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              Needleman-Wunsch Alignment Matrix
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionNumber}>3</span>
+              Sequence Alignment
+            </div>
+            {renderAlignmentComparison()}
+          </div>
+
+          {/* Recovered Sequence */}
+          <div className={`clinical-card ${styles.card}`}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionNumber}>4</span>
+              Recovered Strand
+              <span style={{ fontSize: "0.75rem", color: "#10b981", fontWeight: 600, marginLeft: "auto" }}>
+                ● Complete
+              </span>
+            </div>
+            {renderRecoveredSequence()}
+            {renderTracebackPath()}
+          </div>
+
+          {/* DP Table */}
+          <div className={`clinical-card ${styles.card}`}>
+            <div className={styles.sectionTitle}>
+              <span className={styles.sectionNumber}>5</span>
+              Needleman-Wunsch DP Matrix
               {animatedRows < result.dpMatrix.length && (
-                <span style={{ fontSize: "0.75rem", color: "var(--accent-primary)", fontWeight: "normal", display: "flex", alignItems: "center", gap: "4px" }}>
+                <span className={styles.computingIndicator}>
                   <div className="spinner-teal" style={{ width: "12px", height: "12px", borderWidth: "1.5px" }} />
                   Computing...
                 </span>
               )}
-            </h3>
-            
+              {animatedRows >= result.dpMatrix.length && (
+                <span style={{ fontSize: "0.7rem", color: "#10b981", fontWeight: 600, marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px" }}>
+                  <ArrowDownRight size={12} /> Traceback path highlighted
+                </span>
+              )}
+            </div>
+
             <div className={styles.dpTableContainer}>
               <table className={styles.dpTable}>
                 <thead>
@@ -215,20 +391,23 @@ export default function RecoverPage() {
                   {result.dpMatrix.map((row, i) => {
                     const isRowVisible = i < animatedRows;
                     const charA = i === 0 ? "-" : corruptedInput[i - 1];
-                    
+
                     return (
                       <tr key={`row-${i}`}>
                         <th>{charA}</th>
                         {row.map((cell, j) => {
                           const isVisible = isRowVisible;
+                          const isOnPath = tracebackCells.has(`${i}-${j}`) && animatedRows >= result.dpMatrix.length;
                           const bgColor = isVisible ? getCellColor(cell.val, maxDpVal, minDpVal) : "transparent";
-                          const color = isVisible && cell.val > (maxDpVal + minDpVal) / 2 ? "white" : "var(--foreground)";
-                          
+
                           return (
-                            <td 
+                            <td
                               key={`cell-${i}-${j}`}
-                              className={isVisible ? styles.dpCellFilled : styles.dpCellEmpty}
-                              style={{ backgroundColor: bgColor, color: isVisible ? color : "transparent" }}
+                              className={`${isVisible ? styles.dpCellFilled : styles.dpCellEmpty} ${isOnPath ? styles.dpCellOnPath : ""}`}
+                              style={{
+                                backgroundColor: isOnPath ? "rgba(245, 158, 11, 0.2)" : bgColor,
+                                color: isVisible ? "var(--foreground)" : "transparent",
+                              }}
                             >
                               {cell.val}
                             </td>
@@ -239,6 +418,15 @@ export default function RecoverPage() {
                   })}
                 </tbody>
               </table>
+            </div>
+
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "0.7rem", color: "var(--text-muted)" }}>
+              <span>Match: +2</span>
+              <span>Mismatch: -1</span>
+              <span>Gap: -2</span>
+              <span style={{ marginLeft: "auto", color: "var(--accent-primary)", fontWeight: 600 }}>
+                Optimal score: {result.dpMatrix[result.dpMatrix.length - 1][result.dpMatrix[0].length - 1].val}
+              </span>
             </div>
           </div>
 
