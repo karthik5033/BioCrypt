@@ -1,12 +1,12 @@
 :root {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --border-light: rgba(255, 255, 255, 0.1);
-  --surface-hover: rgba(255, 255, 255, 0.05);
-  --accent-primary: #f59e0b; /* Amber to match DNA bronze */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --border-light: #e2e8f0;
+  --surface-hover: #f8fafc;
+  --accent-primary: #f59e0b; /* Amber */
   --accent-primary-hover: #d97706;
-  --text-muted: #94a3b8;
-  --shadow-subtle: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --text-muted: #64748b;
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -139,16 +139,16 @@ code, pre {
 
 /* Minimal Card */
 .clinical-card {
-  background-color: rgba(15, 23, 42, 0.65);
+  background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .clinical-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-  border-color: rgba(245, 158, 11, 0.5); /* Amber hint */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-color: rgba(245, 158, 11, 0.3); /* Amber hint */
 }
