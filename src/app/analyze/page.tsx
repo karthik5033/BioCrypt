@@ -448,7 +448,7 @@ export default function AnalyzePage() {
           {/* DNA Strand */}
           <div>
             <label style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.5rem", display: "block" }}>
-              DNA Strand ({DEMO_DNA.length} bases)
+              DNA Strand ({dnaStrand.length} bases)
             </label>
             {renderKmpStrand()}
           </div>
