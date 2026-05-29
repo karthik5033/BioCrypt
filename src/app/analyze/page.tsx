@@ -230,7 +230,7 @@ export default function AnalyzePage() {
             <div className={styles.barRow}>
               <div className={styles.barLabel}>
                 <span style={{ color: "var(--accent-primary)", fontWeight: 600 }}>
-                  Huffman DNA
+                  Multi-Stage DNA
                 </span>
                 <span style={{ color: "var(--accent-primary)", fontWeight: 600 }}>
                   {metrics.spaceDna > 0 ? `${metrics.spaceDna} KB` : "—"}
@@ -366,7 +366,9 @@ export default function AnalyzePage() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {[
-              { stage: "Encoding", algo: "Huffman Coding", type: "Greedy" },
+              { stage: "Compression 1", algo: "Run-Length Encoding (RLE)", type: "Lossless" },
+              { stage: "Compression 2", algo: "Lempel-Ziv-Welch (LZW)", type: "Dictionary" },
+              { stage: "Compression 3", algo: "Huffman Coding", type: "Greedy" },
               { stage: "Indexing", algo: "Trie", type: "Tree" },
               { stage: "Encryption", algo: "LCG + Substitution", type: "String" },
               { stage: "Detection", algo: "KMP / Rabin-Karp", type: "String" },

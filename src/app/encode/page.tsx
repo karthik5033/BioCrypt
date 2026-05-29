@@ -221,19 +221,19 @@ export default function EncodePage() {
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>DNA Encoded</span>
+                <span className={styles.statLabel}>After RLE & LZW</span>
                 <span className={styles.statValue}>
-                  {result.stats.dnaLength.toLocaleString()} nt
+                  {result.stats.lzwTokenCount.toLocaleString()} tokens
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Huffman Compressed</span>
+                <span className={styles.statLabel}>Multi-Stage Compressed</span>
                 <span className={styles.statValue}>
                   {formatBytes(result.stats.huffmanByteSize)}
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel} title="Highly compressed files (like JPG/PDF) will yield ~1.00x">
+                <span className={styles.statLabel} title="Total compression ratio (RLE → LZW → Huffman)">
                   Ratio ⓘ
                 </span>
                 <span 
@@ -263,7 +263,7 @@ export default function EncodePage() {
             {/* Compression Bar */}
             <div className={styles.compressionBarWrapper}>
               <div className={styles.compressionBarLabel}>
-                <span>Huffman compressed</span>
+                <span>Multi-Stage compressed</span>
                 <span>Original</span>
               </div>
               <div className={styles.compressionBarTrack}>
