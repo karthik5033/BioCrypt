@@ -30,13 +30,13 @@ export default function RecoverPage() {
   const [corruptedInput, setCorruptedInput] = useState("");
   const [referenceInput, setReferenceInput] = useState("");
 
-  // Auto-populate from encrypt/encode step
+  // Auto-populate from encrypt/encode step (limited to 64 chars to prevent DP table memory crashes)
   useEffect(() => {
     if (cipherResult && !corruptedInput) {
-      setCorruptedInput(cipherResult.encryptedDNA);
+      setCorruptedInput(cipherResult.encryptedDNA.substring(0, 64));
     }
     if (encoderResult && !referenceInput) {
-      setReferenceInput(encoderResult.rawDNA);
+      setReferenceInput(encoderResult.rawDNA.substring(0, 64));
     }
   }, [cipherResult, encoderResult, corruptedInput, referenceInput]);
 
@@ -49,8 +49,9 @@ export default function RecoverPage() {
     if (!corruptedInput || !referenceInput) return;
     setPipelineStep("recover", "in-progress");
 
-    const cleanCorrupted = corruptedInput.toUpperCase().replace(/[^ATCG?]/g, "");
-    const cleanRef = referenceInput.toUpperCase().replace(/[^ATCG]/g, "");
+    // Enforce 64-character hard limit to prevent OOM / Browser crash
+    const cleanCorrupted = corruptedInput.toUpperCase().replace(/[^ATCG?]/g, "").substring(0, 64);
+    const cleanRef = referenceInput.toUpperCase().replace(/[^ATCG]/g, "").substring(0, 64);
 
     setCorruptedInput(cleanCorrupted);
     setReferenceInput(cleanRef);
@@ -254,6 +255,7 @@ export default function RecoverPage() {
               placeholder="e.g. ATCG??TAAGT"
               value={corruptedInput}
               onChange={(e) => setCorruptedInput(e.target.value.toUpperCase())}
+              maxLength={64}
             />
           </div>
 
@@ -268,6 +270,7 @@ export default function RecoverPage() {
               placeholder="e.g. ATCGGCTAAGT"
               value={referenceInput}
               onChange={(e) => setReferenceInput(e.target.value.toUpperCase())}
+              maxLength={64}
             />
           </div>
         </div>
