@@ -305,9 +305,9 @@ export default function EncodePage() {
               )}
             </div>
             {Object.keys(result.stats.codeTable).length > 48 && (
-               <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "1rem", textAlign: "center" }}>
-                 Showing first 48 entries (out of {Object.keys(result.stats.codeTable).length} unique bytes).
-               </p>
+              <div className={styles.codeTableNote}>
+                Showing first 48 entries (out of {Object.keys(result.stats.codeTable).length} unique tokens).
+              </div>
             )}
           </div>
         </div>

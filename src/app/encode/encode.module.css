@@ -234,7 +234,7 @@
 
 .codeTableGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1rem;
   margin-top: 1.5rem;
 }
@@ -242,25 +242,38 @@
 .codeTableEntry {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: space-between;
+  gap: 0.5rem;
   background-color: var(--surface-hover);
   padding: 0.75rem;
   border-radius: 6px;
   border: 1px solid var(--border-light);
+  overflow: hidden;
 }
 
 .codeTableChar {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   font-family: var(--font-dm-mono);
+  white-space: nowrap;
 }
 
 .codeTableArrow {
   color: var(--text-muted);
   font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
 .codeTableCode {
   color: var(--foreground);
   font-weight: 500;
+  word-break: break-all;
+  font-size: 0.85rem;
+}
+
+.codeTableNote {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 1rem;
+  text-align: center;
 }
