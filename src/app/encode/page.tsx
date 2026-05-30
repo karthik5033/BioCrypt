@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Upload, FileText, ArrowRight, Dna } from "lucide-react";
+import Link from "next/link";
+import { Upload, FileText, ArrowRight, Dna, ChevronDown } from "lucide-react";
 import { encodeFile, type EncoderResult } from "@/lib/encoder";
 import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./encode.module.css";
+import EncodeSimulation from "./EncodeSimulation";
 
 // Color map for DNA nucleotides
 const DNA_COLORS: Record<string, string> = {
@@ -103,6 +105,15 @@ export default function EncodePage() {
           Upload a file to convert its binary data into a DNA nucleotide
           sequence, then compress with Huffman coding.
         </p>
+        <div style={{ marginTop: "1rem" }}>
+          <button 
+            className="btn-secondary" 
+            style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 1rem", fontSize: "0.875rem", borderRadius: "8px" }}
+            onClick={() => document.getElementById("simulation-section")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            How it works <ChevronDown size={16} />
+          </button>
+        </div>
       </div>
 
       {/* ── Upload Zone ──────────────────────────────────────────────────── */}
@@ -310,8 +321,19 @@ export default function EncodePage() {
               </div>
             )}
           </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <Link href="/encrypt" className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              Proceed to Encrypt <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       )}
+
+      {/* Educational Simulation Section */}
+      <div id="simulation-section">
+        <EncodeSimulation />
+      </div>
     </div>
   );
 }

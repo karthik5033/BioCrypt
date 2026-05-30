@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Lock, Download, Wand2 } from "lucide-react";
+import Link from "next/link";
+import { Lock, Download, Wand2, ArrowRight, ChevronDown } from "lucide-react";
 import { encryptDNA, type CipherResult } from "@/lib/mutationCipher";
 import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./encrypt.module.css";
+import EncryptSimulation from "./EncryptSimulation";
 
 export default function EncryptPage() {
   const { encoderResult, setPipelineStep, setCipherResult, setEncryptionKey: setGlobalKey } = useBioCrypt();
@@ -54,21 +56,47 @@ export default function EncryptPage() {
   const renderMutatedDNA = () => {
     if (!result) return null;
     
-    // Create a map of changed positions for quick lookup
+    // Limit preview length to prevent freezing on huge files
+    const MAX_PREVIEW = 5000;
+    const isTruncated = result.encryptedDNA.length > MAX_PREVIEW;
+    const previewDNA = result.encryptedDNA.substring(0, MAX_PREVIEW);
+
+    // Create a map of changed positions for quick lookup (only within preview bounds)
     const mutatedPositions = new Set<number>();
-    result.mutationMap.forEach(m => {
-      for (let i = 0; i < m.mutated.length; i++) {
-        mutatedPositions.add(m.position + i);
+    for (const m of result.mutationMap) {
+      if (m.position > MAX_PREVIEW) break; // Optimization if sorted
+      if (m.position < MAX_PREVIEW) {
+        for (let i = 0; i < m.mutated.length; i++) {
+          mutatedPositions.add(m.position + i);
+        }
       }
-    });
+    }
+
+    const elements = [];
+    const dna = previewDNA;
+    let i = 0;
+    while (i < dna.length) {
+      const isMutated = mutatedPositions.has(i);
+      let j = i + 1;
+      while (j < dna.length && mutatedPositions.has(j) === isMutated) {
+        j++;
+      }
+      const chunk = dna.substring(i, j);
+      elements.push(
+        <span key={`chunk-${i}`} className={isMutated ? styles.mutatedChar : ""}>
+          {chunk}
+        </span>
+      );
+      i = j;
+    }
+
+    if (isTruncated) {
+      elements.push(<span key="truncate" style={{ color: "var(--text-muted)" }}>... (truncated for preview)</span>);
+    }
 
     return (
       <div className={styles.sequenceData}>
-        {result.encryptedDNA.split("").map((char, i) => (
-          <span key={i} className={mutatedPositions.has(i) ? styles.mutatedChar : ""}>
-            {char}
-          </span>
-        ))}
+        {elements}
       </div>
     );
   };
@@ -83,6 +111,15 @@ export default function EncryptPage() {
         <p className={styles.subtitle}>
           Encrypt your DNA sequence by applying biologically-inspired mutations seeded by a secret key.
         </p>
+        <div style={{ marginTop: "1rem" }}>
+          <button 
+            className="btn-secondary" 
+            style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 1rem", fontSize: "0.875rem", borderRadius: "8px" }}
+            onClick={() => document.getElementById("simulation-section")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            How it works <ChevronDown size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Input Section */}
@@ -157,7 +194,9 @@ export default function EncryptPage() {
             <div className={styles.sequenceRow}>
               <span className={styles.sequenceTitle}>Original Strand</span>
               <div className={styles.sequenceData} style={{ color: "var(--text-muted)" }}>
-                {dnaInput.toUpperCase().replace(/[^ATCG]/g, "")}
+                {dnaInput.length > 5000 
+                  ? dnaInput.substring(0, 5000).toUpperCase().replace(/[^ATCG]/g, "") + "... (truncated for preview)"
+                  : dnaInput.toUpperCase().replace(/[^ATCG]/g, "")}
               </div>
             </div>
             
@@ -188,7 +227,7 @@ export default function EncryptPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {result.mutationMap.map((m, i) => (
+                  {result.mutationMap.slice(0, 100).map((m, i) => (
                     <tr key={i}>
                       <td className={styles.mono}>{m.position}</td>
                       <td className={styles.mono} style={{ color: "var(--text-muted)" }}>{m.original}</td>
@@ -198,6 +237,13 @@ export default function EncryptPage() {
                       </td>
                     </tr>
                   ))}
+                  {result.mutationMap.length > 100 && (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: "center", padding: "1.5rem", color: "var(--text-muted)" }}>
+                        ... and {result.mutationMap.length - 100} more mutations (hidden to prevent freezing)
+                      </td>
+                    </tr>
+                  )}
                   {result.mutationMap.length === 0 && (
                     <tr>
                       <td colSpan={4} style={{ textAlign: "center", padding: "2rem", color: "var(--text-muted)" }}>
@@ -209,8 +255,19 @@ export default function EncryptPage() {
               </table>
             </div>
           </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <Link href="/recover" className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              Proceed to Recover <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       )}
+
+      {/* Educational Simulation Section */}
+      <div id="simulation-section">
+        <EncryptSimulation />
+      </div>
     </div>
   );
 }

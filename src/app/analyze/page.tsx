@@ -10,9 +10,11 @@ import {
   Search,
   Cpu,
   Activity,
+  ChevronDown
 } from "lucide-react";
 import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./analyze.module.css";
+import AnalyzeSimulation from "./AnalyzeSimulation";
 
 /* ── KMP Algorithm ── */
 function computeFailureFunction(pattern: string): number[] {
@@ -135,25 +137,83 @@ export default function AnalyzePage() {
     });
   }, [kmpPattern, dnaStrand]);
 
-  // Render DNA strand with KMP highlights
   const renderKmpStrand = () => {
-    if (!kmpResults) return <div className={styles.kmpStrand}><span className={styles.kmpNormal}>{dnaStrand}</span></div>;
+    const MAX_PREVIEW = 5000;
+    const isTruncated = dnaStrand.length > MAX_PREVIEW;
+    const previewDNA = dnaStrand.substring(0, MAX_PREVIEW);
 
-    const matchSet = new Set<number>();
+    if (!kmpResults || kmpResults.matches.length === 0) {
+      return (
+        <div className={styles.kmpStrand}>
+          <span className={styles.kmpNormal}>
+            {previewDNA}
+            {isTruncated && " ... (truncated for preview)"}
+          </span>
+        </div>
+      );
+    }
+
     const cleanPat = kmpPattern.toUpperCase().replace(/[^ATCG]/g, "");
+    if (!cleanPat) return <div className={styles.kmpStrand}>
+      <span className={styles.kmpNormal}>
+        {previewDNA}
+        {isTruncated && " ... (truncated for preview)"}
+      </span>
+    </div>;
+
+    const patLen = cleanPat.length;
+    const elements = [];
+    let lastIndex = 0;
+
+    // Merge overlapping intervals
+    const mergedIntervals: {start: number, end: number}[] = [];
     for (const start of kmpResults.matches) {
-      for (let k = start; k < start + cleanPat.length; k++) {
-        matchSet.add(k);
+      if (start > MAX_PREVIEW) break; // Optimization since matches are sorted
+      const end = Math.min(start + patLen, MAX_PREVIEW);
+      if (mergedIntervals.length > 0) {
+        const last = mergedIntervals[mergedIntervals.length - 1];
+        if (start <= last.end) {
+          last.end = Math.max(last.end, end);
+        } else {
+          mergedIntervals.push({ start, end });
+        }
+      } else {
+        mergedIntervals.push({ start, end });
       }
+    }
+
+    for (let i = 0; i < mergedIntervals.length; i++) {
+      const { start, end } = mergedIntervals[i];
+      if (start > lastIndex) {
+        elements.push(
+          <span key={`text-${lastIndex}`} className={styles.kmpNormal}>
+            {previewDNA.substring(lastIndex, start)}
+          </span>
+        );
+      }
+      elements.push(
+        <span key={`match-${start}`} className={styles.kmpMatch}>
+          {previewDNA.substring(start, end)}
+        </span>
+      );
+      lastIndex = end;
+    }
+
+    if (lastIndex < previewDNA.length) {
+      elements.push(
+        <span key={`text-${lastIndex}`} className={styles.kmpNormal}>
+          {previewDNA.substring(lastIndex)}
+        </span>
+      );
+    }
+    
+    if (isTruncated) {
+      elements.push(<span key="truncate" className={styles.kmpNormal}> ... (truncated for preview)</span>);
     }
 
     return (
       <div className={styles.kmpStrand}>
-        {dnaStrand.split("").map((c, i) => (
-          <span key={i} className={matchSet.has(i) ? styles.kmpMatch : styles.kmpNormal}>
-            {c}
-          </span>
-        ))}
+        {elements}
       </div>
     );
   };
@@ -173,6 +233,15 @@ export default function AnalyzePage() {
           Benchmark the pipeline, measure algorithmic complexity, and search DNA
           patterns with KMP — all computed live in your browser.
         </p>
+        <div style={{ marginTop: "1rem" }}>
+          <button 
+            className="btn-secondary" 
+            style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 1rem", fontSize: "0.875rem", borderRadius: "8px" }}
+            onClick={() => document.getElementById("simulation-section")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            How it works <ChevronDown size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Run Benchmark */}
@@ -497,6 +566,11 @@ export default function AnalyzePage() {
           )}
         </div>
 
+      </div>
+
+      {/* Educational Simulation Section */}
+      <div id="simulation-section">
+        <AnalyzeSimulation />
       </div>
     </div>
   );

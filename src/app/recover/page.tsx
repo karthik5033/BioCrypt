@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Activity, RotateCcw, Sparkles, Clock, Cpu, ChevronRight, ArrowDownRight } from "lucide-react";
+import Link from "next/link";
+import { Activity, RotateCcw, Sparkles, Clock, Cpu, ChevronRight, ArrowDownRight, ArrowRight, ChevronDown } from "lucide-react";
 import { needlemanWunsch, type RecoveryResult } from "@/lib/recoveryEngine";
 import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./recover.module.css";
+import RecoverSimulation from "./RecoverSimulation";
 
 /* ── Presets for quick demo ── */
 const PRESETS = [
@@ -234,6 +236,15 @@ export default function RecoverPage() {
           Reconstruct corrupted DNA segments using global sequence alignment.
           The DP table visualizes the optimal edit path in real-time.
         </p>
+        <div style={{ marginTop: "1rem" }}>
+          <button 
+            className="btn-secondary" 
+            style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 1rem", fontSize: "0.875rem", borderRadius: "8px" }}
+            onClick={() => document.getElementById("simulation-section")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            How it works <ChevronDown size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Input Section */}
@@ -448,8 +459,18 @@ export default function RecoverPage() {
             </div>
           </div>
 
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <Link href="/analyze" className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              Proceed to Analyze <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       )}
+
+      {/* Educational Simulation Section */}
+      <div id="simulation-section">
+        <RecoverSimulation />
+      </div>
     </div>
   );
 }

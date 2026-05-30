@@ -540,67 +540,89 @@ export default function Home() {
           }}
         >
           {[
-            { name: "Huffman Coding", complexity: "O(N log N)", type: "Greedy", icon: <Layers size={20} /> },
-            { name: "Needleman-Wunsch", complexity: "O(N × M)", type: "DP", icon: <Activity size={20} /> },
-            { name: "LCS / Edit Distance", complexity: "O(N × M)", type: "DP", icon: <FileText size={20} /> },
-            { name: "KMP Pattern Search", complexity: "O(N + M)", type: "String", icon: <Zap size={20} /> },
-            { name: "Trie Indexing", complexity: "O(L)", type: "Tree", icon: <Layers size={20} /> },
-            { name: "LCG Mutation Seed", complexity: "O(1)", type: "Number Theory", icon: <Fingerprint size={20} /> },
+            { id: "huffman", name: "Huffman Coding", complexity: "O(N log N)", type: "Greedy", icon: <Layers size={20} /> },
+            { id: "needleman-wunsch", name: "Needleman-Wunsch", complexity: "O(N × M)", type: "DP", icon: <Activity size={20} /> },
+            { id: "lcs", name: "LCS / Edit Distance", complexity: "O(N × M)", type: "DP", icon: <FileText size={20} /> },
+            { id: "kmp", name: "KMP Pattern Search", complexity: "O(N + M)", type: "String", icon: <Zap size={20} /> },
+            { id: "trie", name: "Trie Indexing", complexity: "O(L)", type: "Tree", icon: <Layers size={20} /> },
+            { id: "lcg", name: "LCG Mutation Seed", complexity: "O(1)", type: "Number Theory", icon: <Fingerprint size={20} /> },
           ].map((algo, i) => (
-            <div
+            <Link
               key={i}
-              className="clinical-card"
+              href={`/algorithms/${algo.id}`}
               style={{
-                padding: "1.5rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.75rem",
+                textDecoration: "none",
+                color: "inherit",
                 ...revealStyle(algorithms.visible, 100 * i),
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "10px",
-                    background: "rgba(245,158,11,0.1)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--accent-primary)",
-                  }}
-                >
-                  {algo.icon}
+              <div
+                className="clinical-card"
+                style={{
+                  padding: "1.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                  height: "100%",
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.06)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "none";
+                  e.currentTarget.style.boxShadow = "0 2px 10px rgba(0,0,0,0.03)";
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "10px",
+                      background: "rgba(245,158,11,0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "var(--accent-primary)",
+                    }}
+                  >
+                    {algo.icon}
+                  </div>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-dm-mono)",
+                      fontSize: "0.65rem",
+                      fontWeight: 600,
+                      padding: "0.15rem 0.5rem",
+                      borderRadius: "4px",
+                      backgroundColor: "#f1f5f9",
+                      color: "#64748b",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {algo.type}
+                  </span>
                 </div>
+                <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>{algo.name}</h4>
                 <span
                   style={{
                     fontFamily: "var(--font-dm-mono)",
-                    fontSize: "0.65rem",
-                    fontWeight: 600,
-                    padding: "0.15rem 0.5rem",
-                    borderRadius: "4px",
-                    backgroundColor: "#f1f5f9",
-                    color: "#64748b",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
+                    fontSize: "1.25rem",
+                    fontWeight: 800,
+                    color: "var(--accent-primary)",
                   }}
                 >
-                  {algo.type}
+                  {algo.complexity}
                 </span>
+                <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: "0.35rem", color: "var(--accent-primary)", fontSize: "0.8rem", fontWeight: 600 }}>
+                  Learn More <ChevronRight size={14} />
+                </div>
               </div>
-              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>{algo.name}</h4>
-              <span
-                style={{
-                  fontFamily: "var(--font-dm-mono)",
-                  fontSize: "1.25rem",
-                  fontWeight: 800,
-                  color: "var(--accent-primary)",
-                }}
-              >
-                {algo.complexity}
-              </span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

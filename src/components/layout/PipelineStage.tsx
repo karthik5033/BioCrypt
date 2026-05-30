@@ -47,7 +47,7 @@ export default function PipelineStage() {
             position: "absolute",
             top: "12px",
             left: "20px",
-            width: `${getProgressWidth(pipeline)}%`,
+            width: `${getProgressWidth(pathname, pipeline)}%`,
             maxWidth: "calc(100% - 40px)",
             height: "2px",
             backgroundColor: "var(--accent-primary)",
@@ -82,15 +82,7 @@ export default function PipelineStage() {
                   alignItems: "center",
                   justifyContent: "center"
                 }}>
-                  {status === "complete" ? (
-                    <CheckCircle2 color="var(--accent-primary)" size={24} />
-                  ) : status === "in-progress" ? (
-                    <Loader2
-                      color="var(--accent-primary)"
-                      size={24}
-                      style={{ animation: "spin 1s linear infinite" }}
-                    />
-                  ) : isActive ? (
+                  {isActive ? (
                     <div style={{
                       width: "24px",
                       height: "24px",
@@ -98,7 +90,9 @@ export default function PipelineStage() {
                       border: "2px solid var(--accent-primary)",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center"
+                      justifyContent: "center",
+                      backgroundColor: "var(--background)",
+                      boxShadow: "0 0 0 4px rgba(245, 158, 11, 0.2)"
                     }}>
                       <div style={{
                         width: "8px",
@@ -107,17 +101,25 @@ export default function PipelineStage() {
                         backgroundColor: "var(--accent-primary)"
                       }} />
                     </div>
+                  ) : status === "complete" ? (
+                    <CheckCircle2 color="var(--accent-primary)" size={24} />
+                  ) : status === "in-progress" ? (
+                    <Loader2
+                      color="var(--accent-primary)"
+                      size={24}
+                      style={{ animation: "spin 1s linear infinite" }}
+                    />
                   ) : (
                     <Circle color="var(--border-light)" size={24} fill="white" />
                   )}
                 </div>
                 <span style={{
                   fontSize: "0.75rem",
-                  fontWeight: isActive || status === "complete" ? 600 : 400,
-                  color: status === "complete"
-                    ? "var(--accent-primary)"
-                    : isActive
-                      ? "var(--foreground)"
+                  fontWeight: isActive || status === "complete" ? 700 : 500,
+                  color: isActive
+                    ? "var(--foreground)"
+                    : status === "complete"
+                      ? "var(--accent-primary)"
                       : "var(--text-muted)",
                   transition: "color 0.2s ease",
                   fontFamily: "var(--font-dm-sans)",
@@ -142,7 +144,26 @@ export default function PipelineStage() {
               href={step.path}
               className={`mobile-tab ${isActive ? "mobile-tab-active" : ""}`}
             >
-              {status === "complete" ? (
+              {isActive ? (
+                <div style={{
+                  width: "18px",
+                  height: "18px",
+                  borderRadius: "50%",
+                  border: "2px solid var(--accent-primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "var(--background)",
+                  boxShadow: "0 0 0 3px rgba(245, 158, 11, 0.2)"
+                }}>
+                  <div style={{
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--accent-primary)"
+                  }} />
+                </div>
+              ) : status === "complete" ? (
                 <CheckCircle2 size={18} color="var(--accent-primary)" />
               ) : status === "in-progress" ? (
                 <Loader2
@@ -153,8 +174,8 @@ export default function PipelineStage() {
               ) : (
                 <Circle
                   size={18}
-                  color={isActive ? "var(--accent-primary)" : "var(--text-muted)"}
-                  fill={isActive ? "rgba(245,158,11,0.1)" : "transparent"}
+                  color="var(--text-muted)"
+                  fill="transparent"
                 />
               )}
               <span>{step.name}</span>
@@ -166,12 +187,20 @@ export default function PipelineStage() {
   );
 }
 
-function getProgressWidth(pipeline: PipelineState): number {
+function getProgressWidth(pathname: string, pipeline: PipelineState): number {
+  const steps = ["/encode", "/encrypt", "/recover", "/analyze"];
   const order: (keyof PipelineState)[] = ["encode", "encrypt", "recover", "analyze"];
+  
+  const currentIndex = steps.indexOf(pathname);
   let lastComplete = -1;
+  
   for (let i = 0; i < order.length; i++) {
-    if (pipeline[order[i]] === "complete") lastComplete = i;
+    if (pipeline[order[i]] === "complete") {
+      lastComplete = i;
+    }
   }
-  if (lastComplete < 0) return 0;
-  return ((lastComplete + 1) / order.length) * 100;
+  
+  const targetIndex = Math.max(currentIndex, lastComplete);
+  if (targetIndex <= 0) return 0;
+  return (targetIndex / (steps.length - 1)) * 100;
 }
