@@ -437,9 +437,9 @@ export default function Home() {
           {[
             {
               icon: <Dna size={32} />,
-              title: "Huffman DNA Encoding",
-              desc: "Raw bytes are converted to quaternary DNA bases, then compressed with an optimal prefix-free Huffman tree — achieving up to 55% size reduction while preserving perfect reversibility.",
-              tag: "Greedy Algorithm",
+              title: "BWT + Huffman Encoding",
+              desc: "Data is clustered using an O(N log² N) Suffix Array BWT, compressed via MTF & RLE, optimally packed with Huffman trees, and mapped to DNA bases.",
+              tag: "Compression Pipeline",
             },
             {
               icon: <Fingerprint size={32} />,
@@ -544,7 +544,7 @@ export default function Home() {
             { id: "needleman-wunsch", name: "Needleman-Wunsch", complexity: "O(N × M)", type: "DP", icon: <Activity size={20} /> },
             { id: "lcs", name: "LCS / Edit Distance", complexity: "O(N × M)", type: "DP", icon: <FileText size={20} /> },
             { id: "kmp", name: "KMP Pattern Search", complexity: "O(N + M)", type: "String", icon: <Zap size={20} /> },
-            { id: "trie", name: "Trie Indexing", complexity: "O(L)", type: "Tree", icon: <Layers size={20} /> },
+            { id: "bwt", name: "BWT / Suffix Arrays", complexity: "O(N log² N)", type: "String", icon: <Layers size={20} /> },
             { id: "lcg", name: "LCG Mutation Seed", complexity: "O(1)", type: "Number Theory", icon: <Fingerprint size={20} /> },
           ].map((algo, i) => (
             <Link

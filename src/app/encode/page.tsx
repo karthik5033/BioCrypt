@@ -232,19 +232,25 @@ export default function EncodePage() {
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>After RLE & LZW</span>
+                <span className={styles.statLabel}>After BWT + MTF</span>
                 <span className={styles.statValue}>
-                  {result.stats.lzwTokenCount.toLocaleString()} tokens
+                  {result.stats.bwtMtfTokenCount.toLocaleString()} tokens
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Multi-Stage Compressed</span>
+                <span className={styles.statLabel}>After RLE</span>
+                <span className={styles.statValue}>
+                  {result.stats.rleTokenCount.toLocaleString()} tokens
+                </span>
+              </div>
+              <div className={styles.statItem}>
+                <span className={styles.statLabel}>Final Compressed</span>
                 <span className={styles.statValue}>
                   {formatBytes(result.stats.huffmanByteSize)}
                 </span>
               </div>
               <div className={styles.statItem}>
-                <span className={styles.statLabel} title="Total compression ratio (RLE → LZW → Huffman)">
+                <span className={styles.statLabel} title="Total compression ratio (BWT → MTF → RLE → Huffman)">
                   Ratio ⓘ
                 </span>
                 <span 
@@ -274,7 +280,7 @@ export default function EncodePage() {
             {/* Compression Bar */}
             <div className={styles.compressionBarWrapper}>
               <div className={styles.compressionBarLabel}>
-                <span>Multi-Stage compressed</span>
+                <span>Compressed</span>
                 <span>Original</span>
               </div>
               <div className={styles.compressionBarTrack}>
@@ -289,6 +295,9 @@ export default function EncodePage() {
                     )}%`,
                   }}
                 />
+              </div>
+              <div className={styles.compressionBarPipelineLabel}>
+                BWT → MTF → RLE → Huffman
               </div>
             </div>
           </div>

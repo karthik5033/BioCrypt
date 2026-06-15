@@ -2,28 +2,11 @@
 
 import { useState } from "react";
 import { Play, ArrowRight, Dna, Binary } from "lucide-react";
+import { compressBytes } from "@/lib/encoder";
 
 export default function EncodeSimulation() {
   const [inputText, setInputText] = useState("HELLO");
   const [step, setStep] = useState(0);
-
-  // Helper mappings
-  const stringToBinary = (str: string) => {
-    return str.split('').map(char => {
-      return char.charCodeAt(0).toString(2).padStart(8, '0');
-    });
-  };
-
-  const binaryToDna = (binArray: string[]) => {
-    const map: Record<string, string> = { "00": "A", "01": "T", "10": "C", "11": "G" };
-    return binArray.map(bin => {
-      let dna = "";
-      for (let i = 0; i < bin.length; i += 2) {
-        dna += map[bin.slice(i, i + 2)];
-      }
-      return dna;
-    });
-  };
 
   const runSimulation = () => {
     setStep(1);
@@ -32,8 +15,30 @@ export default function EncodeSimulation() {
     setTimeout(() => setStep(4), 4500);
   };
 
-  const binaries = stringToBinary(inputText);
-  const dnas = binaryToDna(binaries);
+  // Run the actual compression pipeline
+  const bytes = new TextEncoder().encode(inputText || "A");
+  const result = compressBytes(bytes);
+  let bits = result.compressedBits;
+
+  // Pad the bits so length is a multiple of 8 to display nicely in chunks
+  const rem = bits.length % 8;
+  if (rem !== 0) {
+    bits += "0".repeat(8 - rem);
+  }
+
+  const chunkedBits: string[] = [];
+  for (let i = 0; i < bits.length; i += 8) {
+    chunkedBits.push(bits.slice(i, i + 8));
+  }
+
+  const dnas = chunkedBits.map(bin => {
+    const map: Record<string, string> = { "00": "A", "01": "T", "10": "C", "11": "G" };
+    let dna = "";
+    for (let i = 0; i < bin.length; i += 2) {
+      dna += map[bin.slice(i, i + 2)];
+    }
+    return dna;
+  });
 
   return (
     <div className="clinical-card" style={{ padding: "2.5rem", marginTop: "3rem" }}>
@@ -42,7 +47,7 @@ export default function EncodeSimulation() {
           <Dna size={24} color="var(--accent-primary)" /> How Encoding Works
         </h2>
         <p style={{ color: "#475569", marginTop: "0.5rem", lineHeight: 1.6 }}>
-          Watch how raw text is converted step-by-step into DNA nucleotides. This simulation demonstrates the core concept behind BioCrypt's encoding stage.
+          Watch how raw text is compressed and converted step-by-step into DNA nucleotides. This simulation runs the actual BWT → MTF → RLE → Huffman pipeline on your text.
         </p>
       </div>
 
@@ -67,7 +72,7 @@ export default function EncodeSimulation() {
           onClick={runSimulation}
           className="btn-primary"
           style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 600 }}
-          disabled={!inputText || step > 0 && step < 4}
+          disabled={!inputText || (step > 0 && step < 4)}
         >
           <Play size={16} /> Simulate Process
         </button>
@@ -86,15 +91,15 @@ export default function EncodeSimulation() {
           </div>
         </div>
 
-        {/* Step 2: ASCII Binary */}
+        {/* Step 2: Compressed Binary */}
         <div style={{ opacity: step >= 2 ? 1 : 0.75, transition: "opacity 0.5s" }}>
           <h3 style={{ fontSize: "0.85rem", fontWeight: 700, textTransform: "uppercase", color: "#64748b", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <ArrowRight size={14} /> 2. Convert to ASCII Binary
+            <ArrowRight size={14} /> 2. Pipeline Compression (BWT → MTF → RLE → Huffman)
           </h3>
           <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            {binaries.map((bin, i) => (
+            {chunkedBits.map((bin, i) => (
               <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}>
-                <span style={{ fontSize: "0.7rem", color: "#475569", fontWeight: 500 }}>{inputText[i]}</span>
+                <span style={{ fontSize: "0.7rem", color: "#475569", fontWeight: 500 }}>Bits {i * 8}-{(i * 8) + 7}</span>
                 <div style={{ padding: "0.5rem", backgroundColor: "rgba(59, 130, 246, 0.1)", color: "#2563eb", borderRadius: "6px", fontFamily: "var(--font-dm-mono)", fontWeight: 600, fontSize: "0.9rem" }}>
                   {bin}
                 </div>
@@ -106,12 +111,12 @@ export default function EncodeSimulation() {
         {/* Step 3: DNA Mapping */}
         <div style={{ opacity: step >= 3 ? 1 : 0.75, transition: "opacity 0.5s" }}>
           <h3 style={{ fontSize: "0.85rem", fontWeight: 700, textTransform: "uppercase", color: "#64748b", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <ArrowRight size={14} /> 3. Map to DNA Nucleotides (00=A, 01=T, 10=C, 11=G)
+            <ArrowRight size={14} /> 3. Map Compressed Bits to DNA (00=A, 01=T, 10=C, 11=G)
           </h3>
           <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
             {dnas.map((dna, i) => (
               <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}>
-                <span style={{ fontSize: "0.7rem", color: "#475569", fontWeight: 500 }}>{binaries[i]}</span>
+                <span style={{ fontSize: "0.7rem", color: "#475569", fontWeight: 500 }}>{chunkedBits[i]}</span>
                 <div style={{ padding: "0.5rem", backgroundColor: "rgba(16, 185, 129, 0.1)", color: "#059669", borderRadius: "6px", fontFamily: "var(--font-dm-mono)", fontWeight: 800, fontSize: "1rem", letterSpacing: "2px" }}>
                   {dna}
                 </div>
@@ -123,13 +128,13 @@ export default function EncodeSimulation() {
         {/* Step 4: Final Strand */}
         <div style={{ opacity: step >= 4 ? 1 : 0, transition: "opacity 0.5s" }}>
           <h3 style={{ fontSize: "0.85rem", fontWeight: 700, textTransform: "uppercase", color: "var(--accent-primary)", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <ArrowRight size={14} /> 4. Final Encoded DNA Strand
+            <ArrowRight size={14} /> 4. Final Compressed DNA Strand
           </h3>
           <div style={{ padding: "1rem", backgroundColor: "rgba(245, 158, 11, 0.1)", border: "1px solid rgba(245, 158, 11, 0.2)", borderRadius: "8px", fontFamily: "var(--font-dm-mono)", fontSize: "1.2rem", fontWeight: 700, color: "var(--accent-primary)", wordBreak: "break-all", lineHeight: 1.5 }}>
             {dnas.join("")}
           </div>
           <p style={{ marginTop: "1rem", fontSize: "0.85rem", color: "#64748b" }}>
-            * Note: The actual BioCrypt pipeline further compresses this strand using Run-Length Encoding, LZW, and Huffman coding to significantly reduce its size before encryption.
+            * Notice how "{inputText || "HELLO"}" now compresses directly into {dnas.join("").length} DNA bases rather than mapping a fixed 4 bases per character!
           </p>
         </div>
       </div>

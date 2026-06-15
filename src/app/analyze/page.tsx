@@ -15,6 +15,9 @@ import {
 import { useBioCrypt } from "@/context/BioCryptContext";
 import styles from "./analyze.module.css";
 import AnalyzeSimulation from "./AnalyzeSimulation";
+import { compressBytes } from "@/lib/encoder";
+import { encryptDNA } from "@/lib/mutationCipher";
+import { needlemanWunsch } from "@/lib/recoveryEngine";
 
 /* ── KMP Algorithm ── */
 function computeFailureFunction(pattern: string): number[] {
@@ -103,14 +106,38 @@ export default function AnalyzePage() {
       const dpRows = recoveryResult?.dpMatrix.length || 0;
       const dpCols = recoveryResult?.dpMatrix[0]?.length || 0;
 
+      let timeEnc = 0, timeMut = 0, timeRec = 0;
+
+      if (encoderResult && cipherResult && recoveryResult) {
+        // Benchmark Encoding
+        const t0 = performance.now();
+        // Since we don't store the original file, we benchmark the engine by compressing the rawDNA string itself
+        compressBytes(new TextEncoder().encode(encoderResult.rawDNA));
+        timeEnc = parseFloat((performance.now() - t0).toFixed(2));
+
+        // Benchmark Mutation
+        const t1 = performance.now();
+        encryptDNA(encoderResult.rawDNA, "benchmarkKey", true, true, true);
+        timeMut = parseFloat((performance.now() - t1).toFixed(2));
+
+        // Benchmark Recovery (Limit to 64 bases to prevent browser freeze on huge DP tables)
+        const maxLen = Math.min(cipherResult.encryptedDNA.length, 64);
+        const t2 = performance.now();
+        needlemanWunsch(
+          cipherResult.encryptedDNA.substring(0, maxLen),
+          encoderResult.rawDNA.substring(0, maxLen)
+        );
+        timeRec = parseFloat((performance.now() - t2).toFixed(2));
+      }
+
       setMetrics({
         spaceDna: huffmanBytes > 0 ? Math.round(huffmanBytes / 1024) : 0,
         spaceBinary: originalBytes > 0 ? Math.round(originalBytes / 1024) : 0,
         compressionRatio: compRatio,
         entropy: ent,
-        timeRecoveryMs: recoveryResult ? 1.2 : 0, // Using static real-world approx since we didn't store time
-        timeEncodingMs: encoderResult ? 0.3 : 0,
-        timeMutationMs: cipherResult ? 0.5 : 0,
+        timeRecoveryMs: timeRec,
+        timeEncodingMs: timeEnc,
+        timeMutationMs: timeMut,
         mutationsApplied: mutApplied,
         dpTableSize: dpRows > 0 ? `${dpRows} × ${dpCols}` : "0 × 0",
       });
@@ -314,7 +341,7 @@ export default function AnalyzePage() {
             </div>
 
             <p className={styles.cardSubtext}>
-              Huffman coding on quaternary DNA bases achieves optimal prefix-free compression. Tree construction runs in O(N log K) where K = alphabet size (4).
+              4-stage pipeline: BWT clusters repeated patterns → MTF converts to low-valued indices → RLE collapses zero-runs → Huffman produces optimal prefix-free codes.
             </p>
           </div>
         </div>
@@ -332,9 +359,33 @@ export default function AnalyzePage() {
             <div className={styles.bigOContainer}>
               <div className={styles.bigOItem}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span className={styles.bigOLabel}>DNA Encoding</span>
+                  <span className={styles.bigOLabel}>BWT</span>
+                  <span className={styles.bigOSub}>Burrows-Wheeler Transform · O(N) space</span>
+                </div>
+                <span className={styles.bigOValue}>O(N²)</span>
+              </div>
+
+              <div className={styles.bigOItem}>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span className={styles.bigOLabel}>MTF</span>
+                  <span className={styles.bigOSub}>Move-to-Front · A = 257 · O(A) space</span>
+                </div>
+                <span className={styles.bigOValue}>O(N × A)</span>
+              </div>
+
+              <div className={styles.bigOItem}>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span className={styles.bigOLabel}>RLE</span>
+                  <span className={styles.bigOSub}>Zero-run collapsing · O(N) space</span>
+                </div>
+                <span className={styles.bigOValue}>O(N)</span>
+              </div>
+
+              <div className={styles.bigOItem}>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span className={styles.bigOLabel}>Huffman</span>
                   <span className={styles.bigOSub}>
-                    Huffman tree build + encode
+                    Prefix-free coding · K symbols · O(K) space
                     {hasRun && ` · ${metrics.timeEncodingMs}ms`}
                   </span>
                 </div>
@@ -435,10 +486,11 @@ export default function AnalyzePage() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {[
-              { stage: "Compression 1", algo: "Run-Length Encoding (RLE)", type: "Lossless" },
-              { stage: "Compression 2", algo: "Lempel-Ziv-Welch (LZW)", type: "Dictionary" },
-              { stage: "Compression 3", algo: "Huffman Coding", type: "Greedy" },
-              { stage: "Indexing", algo: "Trie", type: "Tree" },
+              { stage: "Compression 1", algo: "Burrows-Wheeler Transform (BWT)", type: "String" },
+              { stage: "Compression 2", algo: "Move-to-Front (MTF)", type: "Lossless" },
+              { stage: "Compression 3", algo: "Run-Length Encoding (RLE)", type: "Lossless" },
+              { stage: "Compression 4", algo: "Huffman Coding", type: "Greedy" },
+              { stage: "Indexing", algo: "Suffix Arrays / String Rotation", type: "String" },
               { stage: "Encryption", algo: "LCG + Substitution", type: "String" },
               { stage: "Detection", algo: "KMP / Rabin-Karp", type: "String" },
               { stage: "Recovery", algo: "Needleman-Wunsch", type: "DP" },

@@ -101,18 +101,42 @@ export function encryptDNA(
       });
     }
     else if (type === "Deletion-Insertion") {
-      // Mock Indel by replacing a char with a random one (to keep length consistent for MVP alignment logic later)
-      const orig = dnaArray[pos];
-      const bases = ["A", "T", "C", "G"];
-      const randomBase = bases[Math.floor(lcg.nextFloat() * bases.length)];
-      dnaArray[pos] = randomBase;
+      // True Indel implementation
+      const isInsertion = lcg.nextFloat() > 0.5;
       
-      mutationMap.push({
-        position: pos,
-        original: orig,
-        mutated: randomBase,
-        type: "Deletion-Insertion"
-      });
+      if (isInsertion) {
+        const bases = ["A", "T", "C", "G"];
+        const randomBase = bases[Math.floor(lcg.nextFloat() * bases.length)];
+        dnaArray.splice(pos, 0, randomBase);
+        
+        // Shift previous mutation positions that are at or after the insertion point
+        for (const m of mutationMap) {
+          if (m.position >= pos) m.position++;
+        }
+        
+        mutationMap.push({
+          position: pos,
+          original: "-",
+          mutated: randomBase,
+          type: "Deletion-Insertion"
+        });
+      } else {
+        // Deletion
+        const orig = dnaArray[pos];
+        dnaArray.splice(pos, 1);
+        
+        // Shift previous mutation positions that are after the deletion point
+        for (const m of mutationMap) {
+          if (m.position > pos) m.position--;
+        }
+        
+        mutationMap.push({
+          position: pos,
+          original: orig,
+          mutated: "-",
+          type: "Deletion-Insertion"
+        });
+      }
     }
   }
 
