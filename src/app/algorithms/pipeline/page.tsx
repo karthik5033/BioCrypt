@@ -227,37 +227,59 @@ export default function PipelinePage() {
         </div>
 
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 6: DNA Mapping & LCG Mutation
+          Step 6: Binary to DNA Mapping
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
-          First, the 18 compressed bits are mapped directly to DNA nucleotides (00=A, 01=T, 10=C, 11=G). Then, a seeded LCG applies biological mutations (substitutions and indels) to encrypt the sequence.
+          The 18 compressed bits are cleanly mapped into DNA nucleotides using a fixed biological dictionary (00=A, 01=T, 10=C, 11=G).
         </p>
+        <div className="clinical-card" style={{ padding: "1.5rem", marginBottom: "3rem", fontFamily: "var(--font-dm-mono)" }}>
+          <div style={{ fontWeight: 700, color: "#64748b", marginBottom: "0.5rem", fontSize: "0.9rem", textTransform: "uppercase" }}>Binary Stream</div>
+          <div style={{ color: "#0f172a", letterSpacing: "2px", marginBottom: "1rem" }}>00 11 11 10 01 00 01 00 11</div>
+          <div style={{ fontWeight: 700, color: "#64748b", marginBottom: "0.5rem", fontSize: "0.9rem", textTransform: "uppercase" }}>Synthesized DNA</div>
+          <div style={{ color: "var(--accent-primary)", fontWeight: 800, fontSize: "1.5rem", letterSpacing: "8px" }}>AGGCTATAG</div>
+        </div>
 
-        <div className="clinical-card" style={{ padding: "1.5rem" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", fontFamily: "var(--font-dm-mono)" }}>
-            <div>
-              <div style={{ fontWeight: 700, color: "#64748b", marginBottom: "0.5rem", fontSize: "0.9rem", textTransform: "uppercase" }}>1. Binary to DNA Mapping</div>
-              <div style={{ color: "#0f172a" }}>00 11 11 10 01 00 01 00 11</div>
-              <div style={{ color: "var(--accent-primary)", fontWeight: 700, fontSize: "1.2rem", marginTop: "0.25rem" }}>A  G  G  C  T  A  T  A  G</div>
-            </div>
+        <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
+          Step 7: LCG Cipher Key Generation
+        </h3>
+        <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
+          A custom passcode is provided by the user (e.g. <code>"SECRET"</code>). BioCrypt sums the ASCII values of the characters to generate a master seed, which initializes a Linear Congruential Generator (LCG).
+        </p>
+        <div className="clinical-card" style={{ padding: "1.5rem", marginBottom: "3rem", fontFamily: "var(--font-dm-mono)" }}>
+          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+            <span style={{ color: "#64748b" }}>Passcode:</span>
+            <span style={{ color: "#0f172a", fontWeight: 700 }}>"SECRET"</span>
+          </div>
+          <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+            <span style={{ color: "#64748b" }}>ASCII Sum:</span>
+            <span style={{ color: "#0f172a" }}>83 + 69 + 67 + 82 + 69 + 84 = <span style={{ color: "#10b981", fontWeight: 700 }}>454</span></span>
+          </div>
+          <div style={{ padding: "1rem", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+            <span style={{ color: "#64748b", fontWeight: 700, fontSize: "0.9rem" }}>PRNG Initialized: </span>
+            <span style={{ color: "#0f172a", fontWeight: 700 }}>Seed = 454</span>
+          </div>
+        </div>
 
-            <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "1.5rem" }}>
-              <div style={{ fontWeight: 700, color: "#64748b", marginBottom: "0.5rem", fontSize: "0.9rem", textTransform: "uppercase" }}>2. LCG Mutation Cipher (Key = "SECRET")</div>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <span style={{ color: "#0f172a" }}>Original:</span>
-                <span style={{ letterSpacing: "2px" }}>AGG<span style={{ color: "#3b82f6", fontWeight: 800 }}>C</span>TATAG</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "0.5rem" }}>
-                <span style={{ color: "#0f172a" }}>Mutated: </span>
-                <span style={{ letterSpacing: "2px" }}>AGG<span style={{ color: "#ef4444", fontWeight: 800 }}>A</span>TA<span style={{ color: "#ef4444", fontWeight: 800 }}>C</span>TAG</span>
-              </div>
-            </div>
-            
-            <div style={{ backgroundColor: "#fef2f2", padding: "1rem", borderRadius: "8px", border: "1px solid #fecaca" }}>
-              <div style={{ color: "#ef4444", fontWeight: 700, marginBottom: "0.25rem" }}>Biological Noise Applied:</div>
-              <div style={{ color: "#7f1d1d", fontSize: "0.95rem" }}>• Substitution at Pos 4: <strong>C → A</strong></div>
-              <div style={{ color: "#7f1d1d", fontSize: "0.95rem" }}>• Insertion at Pos 7: <strong>+C</strong></div>
-            </div>
+        <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
+          Step 8: Biological Mutagenesis (Encryption)
+        </h3>
+        <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
+          The LCG generates a deterministic sequence of random numbers. These numbers dictate the exact type, position, and severity of "biological noise" (Substitutions, Insertions, Deletions) to inject into the DNA strand, irreversibly encrypting it.
+        </p>
+        <div className="clinical-card" style={{ padding: "1.5rem", fontFamily: "var(--font-dm-mono)" }}>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{ fontWeight: 700, color: "#64748b", marginBottom: "0.5rem" }}>Iteration 1: Substitution</div>
+            <div style={{ color: "#0f172a", fontSize: "0.95rem" }}>LCG(454) → Pos: 4, Base: A</div>
+            <div style={{ color: "#0f172a", fontSize: "0.95rem" }}>AGG<strong style={{ color: "#3b82f6" }}>C</strong>TATAG → AGG<strong style={{ color: "#ef4444" }}>A</strong>TATAG</div>
+          </div>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <div style={{ fontWeight: 700, color: "#64748b", marginBottom: "0.5rem" }}>Iteration 2: Insertion</div>
+            <div style={{ color: "#0f172a", fontSize: "0.95rem" }}>LCG(Next) → Pos: 7, Base: C</div>
+            <div style={{ color: "#0f172a", fontSize: "0.95rem" }}>AGGATATAG → AGGATA<strong style={{ color: "#ef4444" }}>C</strong>TAG</div>
+          </div>
+          <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "1.5rem", display: "flex", gap: "1rem", alignItems: "center" }}>
+            <span style={{ color: "#64748b", fontWeight: 700 }}>Final Encrypted DNA:</span>
+            <span style={{ color: "#ef4444", fontWeight: 800, fontSize: "1.2rem", letterSpacing: "2px" }}>AGGATACTAG</span>
           </div>
         </div>
       </section>
@@ -274,7 +296,7 @@ export default function PipelinePage() {
         </div>
 
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 7: Needleman-Wunsch Alignment
+          Step 9: Needleman-Wunsch Alignment
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
           To decrypt the data, the corrupted sequence must be aligned against the original (using stored redundant reference fragments). A dynamic programming matrix calculates the optimal edit distance to reverse the mutations.
@@ -329,7 +351,7 @@ export default function PipelinePage() {
         </div>
 
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 8: KMP Pattern Search
+          Step 10: KMP Pattern Search
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
           Before decrypting, BioCrypt-X allows users to scan massive corrupted DNA databases for specific patterns or signatures. The Knuth-Morris-Pratt (KMP) algorithm achieves this in blazing fast O(N + M) time without ever backtracking.
@@ -355,7 +377,7 @@ export default function PipelinePage() {
         </div>
 
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 9: LCS / Edit Distance (Entropy Analysis)
+          Step 11: LCS / Edit Distance (Entropy Analysis)
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
           To measure data corruption severity and biological entropy, the system calculates the Longest Common Subsequence (LCS) and Levenshtein Edit Distance.
@@ -400,7 +422,7 @@ export default function PipelinePage() {
 
         {/* Step 10: Inverse Huffman */}
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 10: Inverse Huffman
+          Step 12: Inverse Huffman
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
           The decoder walks the Huffman tree bit-by-bit to recover the original tokens.
@@ -436,7 +458,7 @@ export default function PipelinePage() {
 
         {/* Step 11: Inverse RLE */}
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 11: Inverse RLE
+          Step 13: Inverse RLE
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
           Any <code>ZERO_RUN</code> tokens are expanded based on the count that follows them.
@@ -454,7 +476,7 @@ export default function PipelinePage() {
 
         {/* Step 12: Inverse MTF */}
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 12: Inverse MTF
+          Step 14: Inverse MTF
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
           Using the exact same starting alphabet list <code>[$ A B C ...]</code>, we reverse the Move-to-Front operations to recover the original characters.
@@ -486,7 +508,7 @@ export default function PipelinePage() {
 
         {/* Step 13: Inverse BWT (LF-Mapping) */}
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 13: Inverse BWT (LF-Mapping)
+          Step 15: Inverse BWT (LF-Mapping)
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
           The final piece is the LF-Mapping (Last-to-First mapping). By sorting the BWT Output (Last Column), we get the First Column. Tracing from Last → First allows us to rebuild the string backwards!
