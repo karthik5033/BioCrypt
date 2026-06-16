@@ -57,8 +57,8 @@ export default function AnalyzePage() {
   const dnaStrand = encoderResult?.rawDNA || "ATCGGCTAAGTCGATCGGATCGATCGGCTAAGTCGATCGGATCGATCGGCTAAGTCGATCGGATCG";
 
   const [metrics, setMetrics] = useState({
-    spaceDna: 0,
-    spaceBinary: 0,
+    spaceDnaBytes: 0,
+    spaceBinaryBytes: 0,
     compressionRatio: 0,
     entropy: 0,
     timeRecoveryMs: 0,
@@ -80,8 +80,8 @@ export default function AnalyzePage() {
     setIsRunning(true);
     setPipelineStep("analyze", "in-progress");
     setMetrics({
-      spaceDna: 0,
-      spaceBinary: 0,
+      spaceDnaBytes: 0,
+      spaceBinaryBytes: 0,
       compressionRatio: 0,
       entropy: 0,
       timeRecoveryMs: 0,
@@ -92,47 +92,48 @@ export default function AnalyzePage() {
     });
 
     setTimeout(() => {
-      const originalBytes = encoderResult?.stats.originalSizeBytes || 0;
-      const huffmanBytes = encoderResult?.stats.huffmanByteSize || 0;
-      
-      const compRatio = encoderResult?.stats.compressionRatio 
-        ? encoderResult.stats.compressionRatio 
-        : 0;
-        
-      const mutApplied = cipherResult?.mutationMap.length || 0;
-      const dnaLen = cipherResult?.encryptedDNA.length || 1; // avoid div by 0
-      const ent = mutApplied > 0 ? Math.min(Math.round((mutApplied / dnaLen) * 100 * 5), 100) : 0;
-
-      const dpRows = recoveryResult?.dpMatrix.length || 0;
-      const dpCols = recoveryResult?.dpMatrix[0]?.length || 0;
-
       let timeEnc = 0, timeMut = 0, timeRec = 0;
+      let compRatio = 0, ent = 0, mutApplied = 0, dpRows = 0, dpCols = 0;
+      let spaceBinaryBytes = 0, spaceDnaBytes = 0;
 
-      if (encoderResult && cipherResult && recoveryResult) {
-        // Benchmark Encoding
-        const t0 = performance.now();
-        // Since we don't store the original file, we benchmark the engine by compressing the rawDNA string itself
-        compressBytes(new TextEncoder().encode(encoderResult.rawDNA));
-        timeEnc = parseFloat((performance.now() - t0).toFixed(2));
+      // Benchmark Encoding
+      const t0 = performance.now();
+      const rawBytes = new TextEncoder().encode(dnaStrand); 
+      // If we have actual file stats, use those. Otherwise simulate with the dnaStrand text.
+      const originalBytes = encoderResult?.stats.originalSizeBytes || rawBytes.length;
+      spaceBinaryBytes = originalBytes;
 
-        // Benchmark Mutation
-        const t1 = performance.now();
-        encryptDNA(encoderResult.rawDNA, "benchmarkKey", true, true, true);
-        timeMut = parseFloat((performance.now() - t1).toFixed(2));
+      const simEncode = compressBytes(rawBytes);
+      timeEnc = parseFloat((performance.now() - t0).toFixed(2));
+      
+      const huffmanBytes = encoderResult?.stats.huffmanByteSize || simEncode.stats.compressedSize;
+      spaceDnaBytes = huffmanBytes;
+      compRatio = encoderResult?.stats.compressionRatio || simEncode.stats.ratio;
 
-        // Benchmark Recovery (Limit to 64 bases to prevent browser freeze on huge DP tables)
-        const maxLen = Math.min(cipherResult.encryptedDNA.length, 64);
-        const t2 = performance.now();
-        needlemanWunsch(
-          cipherResult.encryptedDNA.substring(0, maxLen),
-          encoderResult.rawDNA.substring(0, maxLen)
-        );
-        timeRec = parseFloat((performance.now() - t2).toFixed(2));
-      }
+      // Benchmark Mutation
+      const t1 = performance.now();
+      const testDNA = encoderResult?.rawDNA || dnaStrand;
+      const simCipher = encryptDNA(testDNA, "benchmarkKey", true, true, true);
+      timeMut = parseFloat((performance.now() - t1).toFixed(2));
+      mutApplied = cipherResult?.mutationMap.length || simCipher.mutationMap.length;
+      const dnaLen = cipherResult?.encryptedDNA.length || simCipher.encryptedDNA.length || 1;
+      ent = mutApplied > 0 ? Math.min(Math.round((mutApplied / dnaLen) * 100 * 5), 100) : 0;
+
+      // Benchmark Recovery (Limit to 64 bases)
+      const maxLen = Math.min(simCipher.encryptedDNA.length, 64);
+      const t2 = performance.now();
+      const simRec = needlemanWunsch(
+        simCipher.encryptedDNA.substring(0, maxLen),
+        testDNA.substring(0, maxLen)
+      );
+      timeRec = parseFloat((performance.now() - t2).toFixed(2));
+      
+      dpRows = recoveryResult?.dpMatrix.length || simRec.dpMatrix.length;
+      dpCols = recoveryResult?.dpMatrix[0]?.length || simRec.dpMatrix[0]?.length || 0;
 
       setMetrics({
-        spaceDna: huffmanBytes > 0 ? Math.round(huffmanBytes / 1024) : 0,
-        spaceBinary: originalBytes > 0 ? Math.round(originalBytes / 1024) : 0,
+        spaceDnaBytes,
+        spaceBinaryBytes,
         compressionRatio: compRatio,
         entropy: ent,
         timeRecoveryMs: timeRec,
@@ -313,12 +314,12 @@ export default function AnalyzePage() {
             <div className={styles.barRow}>
               <div className={styles.barLabel}>
                 <span>Standard Binary</span>
-                <span>{metrics.spaceBinary > 0 ? "100 KB" : "—"}</span>
+                <span>{metrics.spaceBinaryBytes > 0 ? (metrics.spaceBinaryBytes < 1024 ? `${metrics.spaceBinaryBytes} B` : `${Math.round(metrics.spaceBinaryBytes / 1024)} KB`) : "—"}</span>
               </div>
               <div className={styles.barTrack}>
                 <div
                   className={`${styles.barFill} ${styles.barFillAlt}`}
-                  style={{ width: `${metrics.spaceBinary}%` }}
+                  style={{ width: "100%" }}
                 />
               </div>
             </div>
@@ -329,13 +330,13 @@ export default function AnalyzePage() {
                   Multi-Stage DNA
                 </span>
                 <span style={{ color: "var(--accent-primary)", fontWeight: 600 }}>
-                  {metrics.spaceDna > 0 ? `${metrics.spaceDna} KB` : "—"}
+                  {metrics.spaceDnaBytes > 0 ? (metrics.spaceDnaBytes < 1024 ? `${metrics.spaceDnaBytes} B` : `${Math.round(metrics.spaceDnaBytes / 1024)} KB`) : "—"}
                 </span>
               </div>
               <div className={styles.barTrack}>
                 <div
                   className={styles.barFill}
-                  style={{ width: `${metrics.spaceDna}%` }}
+                  style={{ width: metrics.spaceBinaryBytes > 0 ? `${Math.min(Math.round((metrics.spaceDnaBytes / metrics.spaceBinaryBytes) * 100), 100)}%` : "0%" }}
                 />
               </div>
             </div>

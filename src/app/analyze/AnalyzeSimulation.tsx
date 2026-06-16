@@ -36,7 +36,7 @@ export default function AnalyzeSimulation() {
 
   const originalSize = bytes.length * 8; // in bits
   const compressedSize = bits.length;
-  const savings = Math.max(0, Math.round((1 - compressedSize / originalSize) * 100));
+  const savings = originalSize > 0 ? Math.round((1 - compressedSize / originalSize) * 100) : 0;
 
   // 2. Encrypt
   // Use a fixed key for the simulation, enable substitution and indels
@@ -92,9 +92,9 @@ export default function AnalyzeSimulation() {
         <div style={{ position: "absolute", left: "24px", top: "30px", bottom: "30px", width: "2px", backgroundColor: "#e2e8f0", zIndex: 0 }} />
 
         {/* Stage 1: Input */}
-        <div style={{ opacity: step >= 1 ? 1 : 0.75, transition: "opacity 0.5s", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: step >= 1 ? "2px solid var(--accent-primary)" : "2px solid #cbd5e1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontWeight: 800, color: step >= 1 ? "var(--accent-primary)" : "#64748b" }}>1</span>
+        <div style={{ opacity: step >= 1 ? 1 : 0, transform: step >= 1 ? "translateY(0)" : "translateY(20px)", pointerEvents: step >= 1 ? "auto" : "none", transition: "all 0.5s ease", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: "2px solid var(--accent-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontWeight: 800, color: "var(--accent-primary)" }}>1</span>
           </div>
           <div style={{ flex: 1, padding: "1.5rem", backgroundColor: "white", borderRadius: "8px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.5rem" }}>Raw Data Input</h3>
@@ -106,28 +106,28 @@ export default function AnalyzeSimulation() {
         </div>
 
         {/* Stage 2: Encode */}
-        <div style={{ opacity: step >= 2 ? 1 : 0.75, transition: "opacity 0.5s", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: step >= 2 ? "2px solid #10b981" : "2px solid #cbd5e1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Database size={20} color={step >= 2 ? "#10b981" : "#64748b"} />
+        <div style={{ opacity: step >= 2 ? 1 : 0, transform: step >= 2 ? "translateY(0)" : "translateY(20px)", pointerEvents: step >= 2 ? "auto" : "none", transition: "all 0.5s ease", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: "2px solid #10b981", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Database size={20} color="#10b981" />
           </div>
           <div style={{ flex: 1, padding: "1.5rem", backgroundColor: "white", borderRadius: "8px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.5rem" }}>Encode & Compress</h3>
-            <p style={{ fontSize: "0.9rem", color: "#475569", marginBottom: "1rem" }}>Text is mapped to ATCG and compressed using Huffman coding.</p>
+            <p style={{ fontSize: "0.9rem", color: "#475569", marginBottom: "1rem" }}>Text is mapped to ATCG and compressed using BWT + Huffman coding.</p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <div style={{ fontFamily: "var(--font-dm-mono)", fontWeight: 700, color: "#10b981", padding: "0.75rem", backgroundColor: "rgba(16, 185, 129, 0.1)", borderRadius: "6px", wordBreak: "break-all" }}>
                 {encodedDNA.length > 30 ? encodedDNA.substring(0, 30) + "..." : encodedDNA}
               </div>
-              <span style={{ fontSize: "0.8rem", color: "#10b981", fontWeight: 600, padding: "0.25rem 0.5rem", backgroundColor: "rgba(16,185,129,0.1)", borderRadius: "4px" }}>
-                {savings > 0 ? `-${savings}% Size` : `+${Math.abs(savings)}% Size`}
+              <span style={{ fontSize: "0.8rem", color: savings >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, padding: "0.25rem 0.5rem", backgroundColor: savings >= 0 ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)", borderRadius: "4px" }}>
+                {savings >= 0 ? `-${savings}% Size` : `+${Math.abs(savings)}% Size`}
               </span>
             </div>
           </div>
         </div>
 
         {/* Stage 3: Encrypt */}
-        <div style={{ opacity: step >= 3 ? 1 : 0.75, transition: "opacity 0.5s", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: step >= 3 ? "2px solid #f59e0b" : "2px solid #cbd5e1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Lock size={20} color={step >= 3 ? "#f59e0b" : "#64748b"} />
+        <div style={{ opacity: step >= 3 ? 1 : 0, transform: step >= 3 ? "translateY(0)" : "translateY(20px)", pointerEvents: step >= 3 ? "auto" : "none", transition: "all 0.5s ease", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: "2px solid #f59e0b", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Lock size={20} color="#f59e0b" />
           </div>
           <div style={{ flex: 1, padding: "1.5rem", backgroundColor: "white", borderRadius: "8px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.5rem" }}>Mutation Cipher</h3>
@@ -139,9 +139,9 @@ export default function AnalyzeSimulation() {
         </div>
 
         {/* Stage 4: Recover */}
-        <div style={{ opacity: step >= 4 ? 1 : 0.75, transition: "opacity 0.5s", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: step >= 4 ? "2px solid #3b82f6" : "2px solid #cbd5e1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Activity size={20} color={step >= 4 ? "#3b82f6" : "#64748b"} />
+        <div style={{ opacity: step >= 4 ? 1 : 0, transform: step >= 4 ? "translateY(0)" : "translateY(20px)", pointerEvents: step >= 4 ? "auto" : "none", transition: "all 0.5s ease", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: "2px solid #3b82f6", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Activity size={20} color="#3b82f6" />
           </div>
           <div style={{ flex: 1, padding: "1.5rem", backgroundColor: "white", borderRadius: "8px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.5rem" }}>Recovery Engine</h3>
@@ -179,9 +179,9 @@ export default function AnalyzeSimulation() {
         </div>
 
         {/* Stage 5: Final Output */}
-        <div style={{ opacity: step >= 5 ? 1 : 0, transition: "opacity 0.5s", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
-          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: step >= 5 ? "2px solid var(--accent-primary)" : "2px solid #cbd5e1", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontWeight: 800, color: step >= 5 ? "var(--accent-primary)" : "#64748b" }}>✓</span>
+        <div style={{ opacity: step >= 5 ? 1 : 0, transform: step >= 5 ? "translateY(0)" : "translateY(20px)", pointerEvents: step >= 5 ? "auto" : "none", transition: "all 0.5s ease", display: "flex", gap: "1.5rem", position: "relative", zIndex: 1 }}>
+          <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#f1f5f9", border: "2px solid var(--accent-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontWeight: 800, color: "var(--accent-primary)" }}>✓</span>
           </div>
           <div style={{ flex: 1, padding: "1.5rem", backgroundColor: "white", borderRadius: "8px", border: "2px solid var(--accent-primary)", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }}>
             <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--accent-primary)", marginBottom: "0.5rem" }}>Data Restored</h3>

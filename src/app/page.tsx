@@ -18,6 +18,7 @@ import {
   Cpu,
   Layers,
   FlaskConical,
+  Database,
 } from "lucide-react";
 
 /* ──────────────────── Scroll-reveal hook ──────────────────── */
@@ -540,12 +541,14 @@ export default function Home() {
           }}
         >
           {[
+            { id: "pipeline", name: "Full Compression Pipeline", complexity: "O(N log² N)", type: "System Design", icon: <Database size={20} /> },
             { id: "huffman", name: "Huffman Coding", complexity: "O(N log N)", type: "Greedy", icon: <Layers size={20} /> },
             { id: "needleman-wunsch", name: "Needleman-Wunsch", complexity: "O(N × M)", type: "DP", icon: <Activity size={20} /> },
             { id: "lcs", name: "LCS / Edit Distance", complexity: "O(N × M)", type: "DP", icon: <FileText size={20} /> },
             { id: "kmp", name: "KMP Pattern Search", complexity: "O(N + M)", type: "String", icon: <Zap size={20} /> },
             { id: "bwt", name: "BWT / Suffix Arrays", complexity: "O(N log² N)", type: "String", icon: <Layers size={20} /> },
             { id: "lcg", name: "LCG Mutation Seed", complexity: "O(1)", type: "Number Theory", icon: <Fingerprint size={20} /> },
+            { id: "trie", name: "Trie Indexing", complexity: "O(L)", type: "Tree", icon: <Database size={20} /> },
           ].map((algo, i) => (
             <Link
               key={i}
