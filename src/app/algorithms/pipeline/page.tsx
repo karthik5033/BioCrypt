@@ -1,6 +1,6 @@
 "use client";
 
-import { Database, Lock, Activity } from "lucide-react";
+import { Database, Lock, Activity, Layers } from "lucide-react";
 
 export default function PipelinePage() {
   return (
