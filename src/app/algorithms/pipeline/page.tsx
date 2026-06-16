@@ -39,11 +39,20 @@ export default function PipelinePage() {
         </div>
       </section>
 
-      {/* Step 1 */}
+      {/* Part 1: Encoding Pipeline */}
       <section style={{ marginBottom: "3rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem", marginTop: "2rem", paddingTop: "2rem", borderTop: "2px dashed #e2e8f0" }}>
+          <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "rgba(59,130,246,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6" }}>
+            <Layers size={20} />
+          </div>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>
+            Part 1: Encoding & Compression Pipeline
+          </h2>
+        </div>
+
+        <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
           Step 1: Raw Bytes
-        </h2>
+        </h3>
         <div className="clinical-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: "var(--font-dm-mono)" }}>
           <div>A = 65</div>
           <div>A = 65</div>
@@ -375,7 +384,7 @@ export default function PipelinePage() {
         </div>
       </section>
 
-      {/* Step 10: Decoding back to text */}
+      {/* Part 5: Detailed Inverse Pipeline */}
       <section style={{ marginBottom: "3rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem", marginTop: "4rem", paddingTop: "2rem", borderTop: "2px dashed #e2e8f0" }}>
           <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "rgba(16,185,129,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981" }}>
@@ -385,22 +394,154 @@ export default function PipelinePage() {
             Part 5: Inverse Pipeline
           </h2>
         </div>
+        <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "2rem" }}>
+          Now that the DNA is flawless, it is mapped back to binary (<code>AGGCTATAG → 001111100100010011</code>). From there, it flows entirely backward through the lossless compression algorithms step-by-step to perfectly reconstruct the original text.
+        </p>
 
+        {/* Step 10: Inverse Huffman */}
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
-          Step 10: Inverse Extraction
+          Step 10: Inverse Huffman
         </h3>
         <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
-          Now that the DNA is flawless, it is translated back into binary. From there, it flows entirely backward through the lossless compression algorithms to perfectly reconstruct the original text.
+          The decoder walks the Huffman tree bit-by-bit to recover the original tokens.
         </p>
-        <div className="clinical-card" style={{ padding: "1.5rem", fontFamily: "var(--font-dm-mono)", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", color: "#64748b" }}><span>DNA to Binary:</span> <span>00 11 11 10 010 00 10 011</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between", color: "#64748b" }}><span>Inverse Huffman:</span> <span>[3, 2, 2, ZERO_RUN, 2, 3, ZERO_RUN, 1]</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between", color: "#64748b" }}><span>Inverse RLE:</span> <span>[3, 2, 2, 0, 0, 3, 0]</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between", color: "#64748b" }}><span>Inverse MTF:</span> <span>C$AAABB</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between", color: "#64748b" }}><span>Inverse BWT:</span> <span>AAABBC$</span></div>
-          <div style={{ borderTop: "1px dashed #cbd5e1", paddingTop: "1rem", display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: "1.2rem" }}>
-            <span style={{ color: "#0f172a" }}>Final Extracted Data:</span> 
-            <span style={{ color: "var(--accent-primary)" }}>"AAABBC"</span>
+        <div className="clinical-card" style={{ padding: "1.5rem", marginBottom: "3rem", fontFamily: "var(--font-dm-mono)" }}>
+          <div style={{ color: "#64748b", marginBottom: "1rem" }}>Input Bitstring: 00 11 11 10 010 00 10 011</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+            <div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>00</div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>11</div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>11</div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>10</div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>010</div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>00</div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>10</div>
+              <div style={{ color: "var(--accent-primary)", fontWeight: 700 }}>011</div>
+            </div>
+            <div>
+              <div style={{ color: "#0f172a" }}>→ 3</div>
+              <div style={{ color: "#0f172a" }}>→ 2</div>
+              <div style={{ color: "#0f172a" }}>→ 2</div>
+              <div style={{ color: "#0f172a" }}>→ ZERO_RUN</div>
+              <div style={{ color: "#0f172a" }}>→ count: 2</div>
+              <div style={{ color: "#0f172a" }}>→ 3</div>
+              <div style={{ color: "#0f172a" }}>→ ZERO_RUN</div>
+              <div style={{ color: "#0f172a" }}>→ count: 1</div>
+            </div>
+          </div>
+          <div style={{ fontWeight: 700, padding: "0.75rem", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px" }}>
+            Decoded Tokens: [3, 2, 2, ZERO_RUN, 2, 3, ZERO_RUN, 1]
+          </div>
+        </div>
+
+        {/* Step 11: Inverse RLE */}
+        <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
+          Step 11: Inverse RLE
+        </h3>
+        <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
+          Any <code>ZERO_RUN</code> tokens are expanded based on the count that follows them.
+        </p>
+        <div className="clinical-card" style={{ padding: "1.5rem", marginBottom: "3rem", fontFamily: "var(--font-dm-mono)" }}>
+          <div style={{ color: "#64748b", marginBottom: "1rem" }}>Input: [3, 2, 2, ZERO_RUN, 2, 3, ZERO_RUN, 1]</div>
+          <div style={{ marginBottom: "1rem" }}>
+            <span style={{ color: "#ef4444" }}>[ZERO_RUN, 2]</span> expands to <span style={{ color: "#10b981", fontWeight: 700 }}>0, 0</span><br/>
+            <span style={{ color: "#ef4444" }}>[ZERO_RUN, 1]</span> expands to <span style={{ color: "#10b981", fontWeight: 700 }}>0</span>
+          </div>
+          <div style={{ fontWeight: 700, padding: "0.75rem", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px" }}>
+            RLE Restored: [3, 2, 2, 0, 0, 3, 0]
+          </div>
+        </div>
+
+        {/* Step 12: Inverse MTF */}
+        <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
+          Step 12: Inverse MTF
+        </h3>
+        <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
+          Using the exact same starting alphabet list <code>[$ A B C ...]</code>, we reverse the Move-to-Front operations to recover the original characters.
+        </p>
+        <div className="clinical-card" style={{ overflowX: "auto", marginBottom: "3rem" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontFamily: "var(--font-dm-mono)" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #e2e8f0", backgroundColor: "#f8fafc" }}>
+                <th style={{ padding: "1rem" }}>Token (Index)</th>
+                <th style={{ padding: "1rem" }}>Current Alphabet</th>
+                <th style={{ padding: "1rem", color: "var(--accent-primary)" }}>Extracted Char</th>
+                <th style={{ padding: "1rem" }}>New Alphabet</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style={{ padding: "0.75rem 1rem" }}>3</td><td style={{ padding: "0.75rem 1rem" }}>[$ A B C ...]</td><td style={{ padding: "0.75rem 1rem", color: "var(--accent-primary)", fontWeight: 700 }}>C</td><td style={{ padding: "0.75rem 1rem" }}>[C $ A B ...]</td></tr>
+              <tr style={{ backgroundColor: "#f8fafc" }}><td style={{ padding: "0.75rem 1rem" }}>2</td><td style={{ padding: "0.75rem 1rem" }}>[C $ A B ...]</td><td style={{ padding: "0.75rem 1rem", color: "var(--accent-primary)", fontWeight: 700 }}>$</td><td style={{ padding: "0.75rem 1rem" }}>[$ C A B ...]</td></tr>
+              <tr><td style={{ padding: "0.75rem 1rem" }}>2</td><td style={{ padding: "0.75rem 1rem" }}>[$ C A B ...]</td><td style={{ padding: "0.75rem 1rem", color: "var(--accent-primary)", fontWeight: 700 }}>A</td><td style={{ padding: "0.75rem 1rem" }}>[A $ C B ...]</td></tr>
+              <tr style={{ backgroundColor: "#f8fafc" }}><td style={{ padding: "0.75rem 1rem" }}>0</td><td style={{ padding: "0.75rem 1rem" }}>[A $ C B ...]</td><td style={{ padding: "0.75rem 1rem", color: "var(--accent-primary)", fontWeight: 700 }}>A</td><td style={{ padding: "0.75rem 1rem" }}>[A $ C B ...]</td></tr>
+              <tr><td style={{ padding: "0.75rem 1rem" }}>0</td><td style={{ padding: "0.75rem 1rem" }}>[A $ C B ...]</td><td style={{ padding: "0.75rem 1rem", color: "var(--accent-primary)", fontWeight: 700 }}>A</td><td style={{ padding: "0.75rem 1rem" }}>[A $ C B ...]</td></tr>
+              <tr style={{ backgroundColor: "#f8fafc" }}><td style={{ padding: "0.75rem 1rem" }}>3</td><td style={{ padding: "0.75rem 1rem" }}>[A $ C B ...]</td><td style={{ padding: "0.75rem 1rem", color: "var(--accent-primary)", fontWeight: 700 }}>B</td><td style={{ padding: "0.75rem 1rem" }}>[B A $ C ...]</td></tr>
+              <tr><td style={{ padding: "0.75rem 1rem" }}>0</td><td style={{ padding: "0.75rem 1rem" }}>[B A $ C ...]</td><td style={{ padding: "0.75rem 1rem", color: "var(--accent-primary)", fontWeight: 700 }}>B</td><td style={{ padding: "0.75rem 1rem" }}>[B A $ C ...]</td></tr>
+            </tbody>
+          </table>
+          <div style={{ padding: "1rem", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0", fontWeight: 700, fontFamily: "var(--font-dm-mono)" }}>
+            BWT Last Column Restored: C$AAABB
+          </div>
+        </div>
+
+        {/* Step 13: Inverse BWT (LF-Mapping) */}
+        <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", marginBottom: "1rem" }}>
+          Step 13: Inverse BWT (LF-Mapping)
+        </h3>
+        <p style={{ color: "#475569", lineHeight: 1.7, marginBottom: "1rem" }}>
+          The final piece is the LF-Mapping (Last-to-First mapping). By sorting the BWT Output (Last Column), we get the First Column. Tracing from Last → First allows us to rebuild the string backwards!
+        </p>
+        <div className="clinical-card" style={{ padding: "1.5rem", marginBottom: "3rem", fontFamily: "var(--font-dm-mono)" }}>
+          <div style={{ display: "flex", gap: "2rem", marginBottom: "1.5rem", overflowX: "auto" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, color: "#334155", marginBottom: "0.5rem" }}>First Column (Sorted)</div>
+              <div style={{ color: "#10b981", fontWeight: 800 }}>$</div>
+              <div style={{ color: "#10b981", fontWeight: 800 }}>A<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₁</span></div>
+              <div style={{ color: "#10b981", fontWeight: 800 }}>A<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₂</span></div>
+              <div style={{ color: "#10b981", fontWeight: 800 }}>A<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₃</span></div>
+              <div style={{ color: "#10b981", fontWeight: 800 }}>B<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₁</span></div>
+              <div style={{ color: "#10b981", fontWeight: 800 }}>B<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₂</span></div>
+              <div style={{ color: "#10b981", fontWeight: 800 }}>C</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, color: "#334155", marginBottom: "0.5rem" }}>Last Column (Input)</div>
+              <div style={{ color: "#ef4444", fontWeight: 800 }}>C</div>
+              <div style={{ color: "#ef4444", fontWeight: 800 }}>$</div>
+              <div style={{ color: "#ef4444", fontWeight: 800 }}>A<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₁</span></div>
+              <div style={{ color: "#ef4444", fontWeight: 800 }}>A<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₂</span></div>
+              <div style={{ color: "#ef4444", fontWeight: 800 }}>A<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₃</span></div>
+              <div style={{ color: "#ef4444", fontWeight: 800 }}>B<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₁</span></div>
+              <div style={{ color: "#ef4444", fontWeight: 800 }}>B<span style={{ fontSize: "0.75rem", color: "#94a3b8", marginLeft: "4px", fontWeight: 500 }}>₂</span></div>
+            </div>
+            <div style={{ flex: 2 }}>
+              <div style={{ fontWeight: 700, color: "#334155", marginBottom: "0.5rem" }}>Traceback Path</div>
+              <div style={{ fontSize: "0.9rem", color: "#64748b", lineHeight: 1.6 }}>
+                1. Start at First: <strong>$</strong> → Link is Last: <strong style={{ color: "#3b82f6" }}>C</strong><br/>
+                2. Go to First: <strong>C</strong> → Link is Last: <strong style={{ color: "#3b82f6" }}>B₂</strong><br/>
+                3. Go to First: <strong>B₂</strong> → Link is Last: <strong style={{ color: "#3b82f6" }}>B₁</strong><br/>
+                4. Go to First: <strong>B₁</strong> → Link is Last: <strong style={{ color: "#3b82f6" }}>A₃</strong><br/>
+                5. Go to First: <strong>A₃</strong> → Link is Last: <strong style={{ color: "#3b82f6" }}>A₂</strong><br/>
+                6. Go to First: <strong>A₂</strong> → Link is Last: <strong style={{ color: "#3b82f6" }}>A₁</strong><br/>
+                7. Go to First: <strong>A₁</strong> → Link is Last: <strong style={{ color: "#3b82f6" }}>$</strong>
+              </div>
+            </div>
+          </div>
+          <div style={{ padding: "1rem", backgroundColor: "rgba(59,130,246,0.1)", borderRadius: "8px", border: "1px solid rgba(59,130,246,0.2)" }}>
+            <div style={{ color: "#1e3a8a", fontWeight: 700 }}>String Read Backwards: C → B → B → A → A → A → $</div>
+            <div style={{ color: "#2563eb", fontWeight: 800, fontSize: "1.2rem", marginTop: "0.5rem" }}>Original Reconstructed: AAABBC$</div>
+          </div>
+        </div>
+
+        {/* Step 14: Final Output */}
+        <div style={{ backgroundColor: "#1e293b", padding: "2rem", borderRadius: "12px", border: "1px solid #334155", textAlign: "center" }}>
+          <h3 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#f8fafc", margin: "0 0 1rem 0" }}>
+            Final Data Extraction
+          </h3>
+          <p style={{ color: "#94a3b8", marginBottom: "1.5rem", fontSize: "1.1rem" }}>
+            The EOF terminator (<code>$</code>) is stripped, and the original file is recovered with 0% data loss.
+          </p>
+          <div style={{ fontFamily: "var(--font-dm-mono)", fontSize: "2rem", fontWeight: 800, color: "var(--accent-primary)", letterSpacing: "4px" }}>
+            "AAABBC"
           </div>
         </div>
       </section>
